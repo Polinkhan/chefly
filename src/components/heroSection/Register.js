@@ -1,7 +1,6 @@
-import { useColorModeValue } from "@chakra-ui/color-mode";
 import { InputGroup, InputRightElement } from "@chakra-ui/input";
-import { Box, Center, HStack, Text } from "@chakra-ui/layout";
-import { Link } from "react-router-dom";
+import {  Center,  Text } from "@chakra-ui/layout";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Button,
   Flex,
@@ -11,105 +10,131 @@ import {
   Input,
   Stack,
   Image,
+  useToast,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { IoEyeOff, IoEye } from "react-icons/io5";
+import { useFirebaseContext } from "../../contexts/FirebaseContext";
 
 export default function Register() {
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(true);
+  // const [name, setName] = useState({ first: "", last: "" });
+  const [email, setEmail] = useState("");
+  const [pass, setPass] = useState("");
+  const [shouldBtnLoad, setBtnLoad] = useState(false);
+
+  const { register } = useFirebaseContext();
+
+  const toast = useToast();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setBtnLoad(true);
+    register(email, pass)
+      .then(() => {
+        navigate("/login");
+        toast({
+          title: "Sign Up Complete",
+          description: "Redirect to Login Page",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      })
+      .catch((error) =>
+        toast({
+          description: error.message,
+          status: "error",
+          duration: 2000,
+          isClosable: true,
+        })
+      )
+      .finally(() => {
+        setBtnLoad(false);
+      });
+  };
 
   return (
     <Stack minH={"100vh"} direction={{ base: "column", md: "row" }}>
-      <Flex
-        p={8}
-        flex={1}
-        align={"center"}
-        justify={"center"}
-        className={"logRegBg"}
-      >
-        <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
-          <Box
-            bg={"white"}
-            w={"full"}
-            maxW={"lg"}
-            p={"10"}
-            boxShadow={"2xl"}
-            rounded={"2xl"}
-          >
-            <Stack spacing={4}>
-              <Stack align={"center"} pb={"5"}>
-                <Heading fontSize={"4xl"} textAlign={"center"}>
-                  Sign up
-                </Heading>
-              </Stack>
-              <HStack>
-                <Box>
-                  <FormControl id="firstName" isRequired>
-                    <FormLabel>First Name</FormLabel>
-                    <Input type="text" rounded={"full"} />
-                  </FormControl>
-                </Box>
-                <Box>
-                  <FormControl id="lastName">
-                    <FormLabel>Last Name</FormLabel>
-                    <Input type="text" rounded={"full"} />
-                  </FormControl>
-                </Box>
-              </HStack>
-              <FormControl id="email" isRequired>
-                <FormLabel>Email address</FormLabel>
-                <Input type="email" rounded={"full"} />
-              </FormControl>
-              <FormControl id="password" isRequired>
-                <FormLabel>Password</FormLabel>
-                <InputGroup>
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    rounded={"full"}
-                  />
-                  <InputRightElement h={"full"}>
-                    <Text
-                      cursor={"pointer"}
-                      fontSize={"xl"}
-                      color={"gray.600"}
-                      onClick={() =>
-                        setShowPassword((showPassword) => !showPassword)
-                      }
-                    >
-                      {showPassword ? <IoEye /> : <IoEyeOff />}
-                    </Text>
-                  </InputRightElement>
-                </InputGroup>
-              </FormControl>
-              <Stack spacing={10} pt={2}>
-                <Button
-                  rounded={"full"}
-                  loadingText="Submitting"
-                  size="lg"
-                  bg={"teal.400"}
-                  color={"white"}
-                  _hover={{
-                    bg: "teal.500",
-                  }}
-                >
-                  Sign up
-                </Button>
-              </Stack>
-
-              <Center pt={6}>
-                <Text align={"center"}>Already a user?</Text>
-                <Link to={"/login"}>
-                  <Text
-                    px={"2"}
-                    color={"teal.400"}
-                    _hover={{ textDecoration: "underline" }}
-                  >
-                    Login
-                  </Text>
-                </Link>
-              </Center>
+      <Flex flex={1} align={"center"} justify={"center"} className={"logRegBg"}>
+        <Stack
+          as={"form"}
+          spacing={4}
+          w={"full"}
+          maxW={"md"}
+          bg={"white"}
+          p={"10"}
+          boxShadow={"2xl"}
+          rounded={"2xl"}
+          onSubmit={handleSubmit}
+        >
+          <Stack spacing={4}>
+            <Stack align={"center"} pb={"5"}>
+              <Heading fontSize={"4xl"} textAlign={"center"}>
+                Sign up
+              </Heading>
             </Stack>
-          </Box>
+            <FormControl id="email" isRequired>
+              <FormLabel>Email address</FormLabel>
+              <Input
+                autoComplete="off"
+                autoFocus
+                type="email"
+                rounded={"full"}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </FormControl>
+            <FormControl id="password" isRequired>
+              <FormLabel>Password</FormLabel>
+              <InputGroup>
+                <Input
+                  autoComplete="off"
+                  type={showPassword ? "text" : "password"}
+                  rounded={"full"}
+                  value={pass}
+                  onChange={(e) => setPass(e.target.value)}
+                />
+                <InputRightElement h={"full"}>
+                  <Text
+                    cursor={"pointer"}
+                    fontSize={"xl"}
+                    color={"gray.600"}
+                    onClick={() =>
+                      setShowPassword((showPassword) => !showPassword)
+                    }
+                  >
+                    {showPassword ? <IoEye /> : <IoEyeOff />}
+                  </Text>
+                </InputRightElement>
+              </InputGroup>
+            </FormControl>
+            <Stack spacing={10} pt={2}>
+              <Button
+                size={"lg"}
+                type={"submit"}
+                colorScheme={"teal"}
+                rounded={"full"}
+                isLoading={shouldBtnLoad}
+              >
+                Sign Up
+              </Button>
+            </Stack>
+
+            <Center pt={6}>
+              <Text align={"center"}>Already a user?</Text>
+              <Link to={"/login"}>
+                <Text
+                  px={"2"}
+                  color={"teal.400"}
+                  _hover={{ textDecoration: "underline" }}
+                >
+                  Login
+                </Text>
+              </Link>
+            </Center>
+          </Stack>
         </Stack>
       </Flex>
       <Flex flex={1}>

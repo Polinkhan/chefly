@@ -7,7 +7,6 @@ import {
   Stack,
   Collapse,
   Icon,
-  Link,
   Popover,
   PopoverTrigger,
   PopoverContent,
@@ -22,12 +21,6 @@ import {
   MenuDivider,
   MenuItem,
 } from "@chakra-ui/react";
-// import {
-//   HamburgerIcon,
-//   CloseIcon,
-//   ChevronDownIcon,
-//   ChevronRightIcon,
-// } from "@chakra-ui/icons";
 
 import {
   IoMenu,
@@ -35,9 +28,14 @@ import {
   IoChevronDown,
   IoChevronForward,
 } from "react-icons/io5";
+import { Link } from "react-router-dom";
+import { useFirebaseContext } from "../contexts/FirebaseContext";
 
 export default function Navbar() {
   const { isOpen, onToggle } = useDisclosure();
+  const { logout } = useFirebaseContext();
+  const { Data } = useFirebaseContext();
+  console.log(Data);
 
   return (
     <Box position={"sticky"} top={"0"}>
@@ -97,28 +95,30 @@ export default function Navbar() {
               cursor={"pointer"}
               minW={0}
             >
-              <Avatar
-                size={"sm"}
-                src={"https://avatars.dicebear.com/api/male/username.svg"}
-              />
+              <Avatar size={"sm"} src={Data.url} />
             </MenuButton>
             <MenuList alignItems={"center"}>
               <br />
               <Center>
-                <Avatar
-                  size={"2xl"}
-                  src={"https://avatars.dicebear.com/api/male/username.svg"}
-                />
+                <Avatar size={"2xl"} src={Data.url} />
               </Center>
               <br />
               <Center>
-                <p>Username</p>
+                <Text>{Data.name ? Data.name : "Null"}</Text>
               </Center>
               <br />
               <MenuDivider />
               <MenuItem>Your Servers</MenuItem>
-              <MenuItem>Account Settings</MenuItem>
-              <MenuItem>Logout</MenuItem>
+              <MenuItem>
+                <Link to="/account">Account Settings</Link>
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  logout();
+                }}
+              >
+                Log Out
+              </MenuItem>
             </MenuList>
           </Menu>
         </Stack>
@@ -283,13 +283,6 @@ const MobileNavItem = ({ label, children, href }) => {
     </Stack>
   );
 };
-
-// interface NavItem {
-//   label: string;
-//   subLabel?: string;
-//   children?: Array<NavItem>;
-//   href?: string;
-// }
 
 const NAV_ITEMS = [
   {

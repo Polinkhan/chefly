@@ -1,51 +1,42 @@
 import "./App.css";
-import FooterSection from "./components/footerSection/FooterSection";
-import HeroSection from "./components/heroSection/heroSection";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import Navbar from "./components/Navbar";
+import NotFound from "./components/NotFound";
 import Login from "./components/heroSection/Login";
 import Register from "./components/heroSection/Register";
-import NotFound from "./components/NotFound";
-import { useLoginContext } from "./contexts/LoginContext";
+import HeroSection from "./components/heroSection/HeroSection";
 import HomeSection from "./components/homeSection/HomeSection";
-import Navbar from "./components/Navbar";
+import { useFirebaseContext } from "./contexts/FirebaseContext";
+import PrivateRoute from "./components/privateRoute/PrivateRoute";
+import PreventRoute from "./components/privateRoute/PreventRoute";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import PageLaoding from "./components/PageLaoding";
+import MyAccount from "./components/account/MyAccount";
 
 function App() {
-  const { isSignIn } = useLoginContext();
-  console.log(isSignIn);
-  return (
+  const { currentUser } = useFirebaseContext();
+  return currentUser || currentUser === false ? (
     <Router>
-      {isSignIn && <Navbar />}
-
+      {currentUser && <Navbar />}
       <Routes>
-        <Route
-          exact
-          path="/"
-          element={isSignIn ? <HomeSection /> : <HeroSection />}
-        />
-        <Route
-          exact
-          path="/login"
-          element={isSignIn ? <Navigate to="/home" replace /> : <Login />}
-        />
-        <Route
-          exact
-          path="/register"
-          element={isSignIn ? <Navigate to="/home" replace /> : <Register />}
-        />
-        <Route
-          exact
-          path="/home"
-          element={isSignIn ? <HomeSection /> : <Navigate to="/" replace />}
-        />
+        {/* Routes When User is Not Authenticated */}
+        <Route element={<PreventRoute />}>
+          <Route exact path="/" element={<HeroSection />} />
+          <Route exact path="/login" element={<Login />} />
+          <Route exact path="/register" element={<Register />} />
+        </Route>
+
+        {/* Routes When User is Authenticated */}
+        <Route element={<PrivateRoute />}>
+          <Route exact path="/home" element={<HomeSection />} />
+          <Route exact path="/account" element={<MyAccount />} />
+        </Route>
+
+        {/* Routes When route Not Found */}
         <Route path="*" element={<NotFound />} />
       </Routes>
-      <FooterSection />
     </Router>
+  ) : (
+    <PageLaoding />
   );
 }
 

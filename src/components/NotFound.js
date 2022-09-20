@@ -1,9 +1,9 @@
-import { Center, Text, VStack } from "@chakra-ui/layout";
+import { Text, VStack } from "@chakra-ui/layout";
 import React from "react";
 
 function NotFound() {
   return (
-    <VStack h={"100vh"} justifyContent={"center"}>
+    <VStack h={"55vh"} justifyContent={"center"}>
       <Text as="h1" fontSize={"6xl"} fontWeight={"500"} color={"red.400"}>
         Error 404 !
       </Text>
