@@ -1,3 +1,6 @@
+* {
+  margin: 0;
+}
 .heroBg {
   background-size: cover;
   background-image: url("../public/heroBG.svg");
@@ -7,3 +10,4 @@
   background-size: cover;
   background-image: url("../public/LogRegBG.svg");
 }
+

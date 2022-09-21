@@ -21,6 +21,7 @@ import {
   MenuDivider,
   MenuItem,
 } from "@chakra-ui/react";
+import { useEffect } from "react";
 
 import {
   IoMenu,
@@ -33,9 +34,14 @@ import { useFirebaseContext } from "../contexts/FirebaseContext";
 
 export default function Navbar() {
   const { isOpen, onToggle } = useDisclosure();
-  const { logout } = useFirebaseContext();
-  const { Data } = useFirebaseContext();
-  console.log(Data);
+  const { logout, currentUser } = useFirebaseContext();
+  console.warn = () => {};
+
+  console.log(currentUser.displayName);
+
+  useEffect(() => {
+    console.log(currentUser);
+  }, [currentUser]);
 
   return (
     <Box position={"sticky"} top={"0"}>
@@ -95,23 +101,23 @@ export default function Navbar() {
               cursor={"pointer"}
               minW={0}
             >
-              <Avatar size={"sm"} src={Data.url} />
+              <Avatar size={"sm"} src={currentUser.photoURL} />
             </MenuButton>
             <MenuList alignItems={"center"}>
               <br />
               <Center>
-                <Avatar size={"2xl"} src={Data.url} />
+                <Avatar size={"2xl"} src={currentUser.photoURL} />
               </Center>
               <br />
               <Center>
-                <Text>{Data.name ? Data.name : "Null"}</Text>
+                <Text>{currentUser.displayName}</Text>
               </Center>
               <br />
               <MenuDivider />
               <MenuItem>Your Servers</MenuItem>
-              <MenuItem>
-                <Link to="/account">Account Settings</Link>
-              </MenuItem>
+              <Link to="/account">
+                <MenuItem>Account Settings</MenuItem>
+              </Link>
               <MenuItem
                 onClick={() => {
                   logout();

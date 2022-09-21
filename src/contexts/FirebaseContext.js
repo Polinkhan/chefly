@@ -8,6 +8,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   updateProfile,
+  updateEmail,
 } from "@firebase/auth";
 
 const FirebaseContext = createContext({
@@ -22,7 +23,6 @@ export const useFirebaseContext = () => useContext(FirebaseContext);
 
 const FirebaseContextProvider = (props) => {
   const [currentUser, setCurrenUser] = useState(null);
-  const [Data, setData] = useState({ name: "", url: "" });
 
   const register = (email, pass) => {
     return createUserWithEmailAndPassword(auth, email, pass);
@@ -37,39 +37,34 @@ const FirebaseContextProvider = (props) => {
     return signInWithPopup(auth, provider);
   };
 
-  const updateMyProfile = (name, url) => {
-    return updateProfile(auth.currentUser, {
-      displayName: name,
-      photoURL: url,
-    });
+  const updateMyProfile = (value, input) => {
+    if (value === "displayName" || value === "photoURL") {
+      return updateProfile(auth.currentUser, {
+        [value]: input,
+      });
+    } else if (value === "email") {
+      return updateEmail(auth.currentUser, input);
+    }
   };
   const logout = () => {
     return signOut(auth);
   };
 
   useEffect(() => {
+    console.log(currentUser);
+  }, [currentUser]);
+
+  useEffect(() => {
     const unSubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setCurrenUser(user);
-        setData({
-          name: user.displayName,
-          url: user.photoURL,
-        });
-      } else {
-        setCurrenUser(false);
-      }
+      if (user) setCurrenUser(user);
+      else setCurrenUser(false);
     });
     return () => unSubscribe();
   }, []);
 
-  useEffect(() => {
-    console.log(currentUser);
-  }, [currentUser]);
-
   const value = {
     currentUser,
-    Data,
-    setData,
+    setCurrenUser,
     register,
     login,
     logout,

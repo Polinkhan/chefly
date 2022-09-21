@@ -1,5 +1,5 @@
 import { InputGroup, InputRightElement } from "@chakra-ui/input";
-import {  Center,  Text } from "@chakra-ui/layout";
+import { Center, HStack, Text } from "@chakra-ui/layout";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Button,
@@ -18,29 +18,33 @@ import { useFirebaseContext } from "../../contexts/FirebaseContext";
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(true);
-  // const [name, setName] = useState({ first: "", last: "" });
+  const [name, setName] = useState({ first: "", last: "" });
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const [shouldBtnLoad, setBtnLoad] = useState(false);
 
-  const { register } = useFirebaseContext();
+  const { register, setCurrenUser, updateMyProfile } = useFirebaseContext();
 
   const toast = useToast();
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setBtnLoad(true);
     register(email, pass)
-      .then(() => {
-        navigate("/login");
-        toast({
-          title: "Sign Up Complete",
-          description: "Redirect to Login Page",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
+      .then((response) => {
+        updateMyProfile("displayName", name.first + " " + name.last)
+          .then(() => setCurrenUser({ ...response.user }))
+          .catch((error) =>
+            toast({
+              description: error.message,
+              status: "error",
+              duration: 2000,
+              isClosable: true,
+            })
+          )
+          .finally(() => {
+            setBtnLoad(false);
+          });
       })
       .catch((error) =>
         toast({
@@ -50,9 +54,7 @@ export default function Register() {
           isClosable: true,
         })
       )
-      .finally(() => {
-        setBtnLoad(false);
-      });
+      .finally(() => {});
   };
 
   return (
@@ -75,6 +77,34 @@ export default function Register() {
                 Sign up
               </Heading>
             </Stack>
+            <HStack>
+              <FormControl id="email" isRequired>
+                <FormLabel>First Name</FormLabel>
+                <Input
+                  autoComplete="off"
+                  autoFocus
+                  type="text"
+                  rounded={"full"}
+                  value={name.first}
+                  onChange={(e) =>
+                    setName({ first: e.target.value, last: name.last })
+                  }
+                />
+              </FormControl>
+              <FormControl id="email" isRequired>
+                <FormLabel>Last Name</FormLabel>
+                <Input
+                  autoComplete="off"
+                  autoFocus
+                  type="text"
+                  rounded={"full"}
+                  value={name.last}
+                  onChange={(e) =>
+                    setName({ first: name.first, last: e.target.value })
+                  }
+                />
+              </FormControl>
+            </HStack>
             <FormControl id="email" isRequired>
               <FormLabel>Email address</FormLabel>
               <Input
