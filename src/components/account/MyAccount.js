@@ -1,4 +1,4 @@
-import { Avatar, AvatarBadge } from "@chakra-ui/avatar";
+import { Avatar } from "@chakra-ui/avatar";
 import { Button, IconButton } from "@chakra-ui/button";
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { useDisclosure } from "@chakra-ui/hooks";
@@ -7,7 +7,6 @@ import {
   Box,
   Center,
   Container,
-  HStack,
   Stack,
   Text,
   VStack,
@@ -31,9 +30,6 @@ const MyAccount = () => {
   const { currentUser } = useFirebaseContext();
 
   const ProfileItems = ["displayName", "email", "phoneNumber"];
-
-  // const x = "Boy";
-  // console.log({ [x]: "polin" });
 
   return (
     <Center h={"calc(100vh - 60px)"}>

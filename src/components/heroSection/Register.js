@@ -1,6 +1,6 @@
 import { InputGroup, InputRightElement } from "@chakra-ui/input";
 import { Center, HStack, Text } from "@chakra-ui/layout";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   Button,
   Flex,
