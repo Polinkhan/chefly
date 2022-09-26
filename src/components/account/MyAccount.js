@@ -168,7 +168,7 @@ const DropZone = ({ onClose }) => {
 
   const onDrop = useCallback((acceptedFile, rejectedFiles) => {
     setFile(acceptedFile[0]);
-  }, []);//eslint-disable-line
+  }, []); //eslint-disable-line
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,

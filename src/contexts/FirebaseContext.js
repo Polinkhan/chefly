@@ -42,6 +42,7 @@ const FirebaseContextProvider = (props) => {
   };
 
   const logout = () => {
+    setMyDB({});
     return signOut(auth);
   };
 
@@ -65,12 +66,12 @@ const FirebaseContextProvider = (props) => {
         if (snap.exists()) {
           setMyDB(snap.data());
         } else {
-          updateDatabase({});
+          updateDatabase({ photoURL: currentUser.photoURL });
         }
       });
   }, [currentUser]); //eslint-disable-line
 
-  const value = { currentUser, setCurrenUser, myDB, register, login, logout, signInWithGoogle, updateMyProfile, updateDatabase };
+  const value = { currentUser, setCurrenUser, myDB, setMyDB, register, login, logout, signInWithGoogle, updateMyProfile, updateDatabase };
 
   return <FirebaseContext.Provider value={value}>{props.children}</FirebaseContext.Provider>;
 };

@@ -3,7 +3,7 @@ import React from "react";
 import { useFirebaseContext } from "../../contexts/FirebaseContext";
 
 function HomeSection() {
-  const { currentUser } = useFirebaseContext();
+  const { currentUser, myDB } = useFirebaseContext();
 
   return (
     <Center h="calc(100vh - 60px)" w={"100%"}>
@@ -16,7 +16,7 @@ function HomeSection() {
             </Center>
             <VStack h={"70%"} w={"100%"} alignItems={"start"} p={"4"} justifyContent={"space-between"}>
               <Center>
-                <Avatar src={currentUser.photoURL} />
+                <Avatar src={myDB.photoURL} />
                 <Text px={"2"} fontWeight={"bold"}>
                   {currentUser.displayName}
                 </Text>
