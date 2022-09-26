@@ -1,15 +1,7 @@
+import { auth, db } from "../util/init-firebase";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { auth } from "../util/init-firebase";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut,
-  GoogleAuthProvider,
-  signInWithPopup,
-  updateProfile,
-  updateEmail,
-} from "@firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, updateProfile, updateEmail } from "@firebase/auth";
+import { setDoc, onSnapshot, doc } from "firebase/firestore";
 
 const FirebaseContext = createContext({
   currentUser: null,
@@ -18,11 +10,13 @@ const FirebaseContext = createContext({
   signInWithGoogle: () => Promise,
   logout: () => Promise,
   updateMyProfile: () => Promise,
+  updateDatabase: () => Promise,
 });
 export const useFirebaseContext = () => useContext(FirebaseContext);
 
 const FirebaseContextProvider = (props) => {
   const [currentUser, setCurrenUser] = useState(null);
+  const [myDB, setMyDB] = useState(null);
 
   const register = (email, pass) => {
     return createUserWithEmailAndPassword(auth, email, pass);
@@ -38,7 +32,7 @@ const FirebaseContextProvider = (props) => {
   };
 
   const updateMyProfile = (value, input) => {
-    if (value === "displayName" || value === "photoURL") {
+    if (value === "displayName") {
       return updateProfile(auth.currentUser, {
         [value]: input,
       });
@@ -46,13 +40,14 @@ const FirebaseContextProvider = (props) => {
       return updateEmail(auth.currentUser, input);
     }
   };
+
   const logout = () => {
     return signOut(auth);
   };
 
-  useEffect(() => {
-    console.log(currentUser);
-  }, [currentUser]);
+  const updateDatabase = (updatedDatabase) => {
+    return setDoc(doc(db, "messenger", currentUser.uid), updatedDatabase);
+  };
 
   useEffect(() => {
     const unSubscribe = onAuthStateChanged(auth, (user) => {
@@ -62,21 +57,22 @@ const FirebaseContextProvider = (props) => {
     return () => unSubscribe();
   }, []);
 
-  const value = {
-    currentUser,
-    setCurrenUser,
-    register,
-    login,
-    logout,
-    signInWithGoogle,
-    updateMyProfile,
-  };
+  //"xbZ78MJkmTgBBENlyAFt"
 
-  return (
-    <FirebaseContext.Provider value={value}>
-      {props.children}
-    </FirebaseContext.Provider>
-  );
+  useEffect(() => {
+    currentUser &&
+      onSnapshot(doc(db, "messenger", currentUser.uid), (snap) => {
+        if (snap.exists()) {
+          setMyDB(snap.data());
+        } else {
+          updateDatabase({});
+        }
+      });
+  }, [currentUser]); //eslint-disable-line
+
+  const value = { currentUser, setCurrenUser, myDB, register, login, logout, signInWithGoogle, updateMyProfile, updateDatabase };
+
+  return <FirebaseContext.Provider value={value}>{props.children}</FirebaseContext.Provider>;
 };
 
 export default FirebaseContextProvider;

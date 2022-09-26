@@ -5,7 +5,7 @@ import React from "react";
 const PageLaoding = () => {
   return (
     <Center h={"20vh"}>
-      <CircularProgress isIndeterminate color="blue.300" />;
+      <CircularProgress isIndeterminate color="blue.300" />
     </Center>
   );
 };

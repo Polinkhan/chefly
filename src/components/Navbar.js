@@ -1,26 +1,4 @@
-import {
-  Box,
-  Flex,
-  Text,
-  IconButton,
-  Button,
-  Stack,
-  Collapse,
-  Icon,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  useColorModeValue,
-  useBreakpointValue,
-  useDisclosure,
-  Menu,
-  MenuButton,
-  Avatar,
-  MenuList,
-  Center,
-  MenuDivider,
-  MenuItem,
-} from "@chakra-ui/react";
+import { Box, Flex, Text, IconButton, Button, Stack, Collapse, Icon, Popover, PopoverTrigger, PopoverContent, useColorModeValue, useBreakpointValue, useDisclosure, Menu, MenuButton, Avatar, MenuList, Center, MenuDivider, MenuItem } from "@chakra-ui/react";
 import { useEffect } from "react";
 
 import { IoMenu, IoClose, IoChevronDown, IoChevronForward } from "react-icons/io5";
@@ -29,7 +7,7 @@ import { useFirebaseContext } from "../contexts/FirebaseContext";
 
 export default function Navbar() {
   const { isOpen, onToggle } = useDisclosure();
-  const { logout, currentUser } = useFirebaseContext();
+  const { logout, currentUser, myDB } = useFirebaseContext();
   console.warn = () => {};
 
   console.log(currentUser.displayName);
@@ -114,11 +92,7 @@ export default function Navbar() {
     <Box {...NavbarCSS[0]}>
       <Flex {...NavbarCSS[1]}>
         <Flex {...NavbarCSS[2]}>
-          <IconButton
-            {...NavbarCSS[3]}
-            onClick={onToggle}
-            icon={isOpen ? <IoClose /> : <IoMenu />}
-          />
+          <IconButton {...NavbarCSS[3]} onClick={onToggle} icon={isOpen ? <IoClose /> : <IoMenu />} />
         </Flex>
         <Flex {...NavbarCSS[4]}>
           <Link to="/">
@@ -131,14 +105,14 @@ export default function Navbar() {
         </Flex>
 
         <Stack {...NavbarCSS[7]}>
-          <Menu >
+          <Menu>
             <MenuButton {...NavbarCSS[8]}>
-              <Avatar size={"sm"} src={currentUser.photoURL} />
+              <Avatar size={"sm"} src={myDB.photoURL} />
             </MenuButton>
             <MenuList alignItems={"center"}>
               <br />
               <Center>
-                <Avatar size={"2xl"} src={currentUser.photoURL} />
+                <Avatar size={"2xl"} src={myDB.photoURL} />
               </Center>
               <br />
               <Center>
@@ -190,14 +164,7 @@ const DesktopNav = () => {
             </PopoverTrigger>
 
             {navItem.children && (
-              <PopoverContent
-                border={0}
-                boxShadow={"xl"}
-                bg={popoverContentBgColor}
-                p={4}
-                rounded={"xl"}
-                minW={"sm"}
-              >
+              <PopoverContent border={0} boxShadow={"xl"} bg={popoverContentBgColor} p={4} rounded={"xl"} minW={"sm"}>
                 <Stack>
                   {navItem.children.map((child) => (
                     <DesktopSubNav key={child.label} {...child} />
@@ -214,14 +181,7 @@ const DesktopNav = () => {
 
 const DesktopSubNav = ({ label, href, subLabel }) => {
   return (
-    <Link
-      href={href}
-      role={"group"}
-      display={"block"}
-      p={2}
-      rounded={"md"}
-      _hover={{ bg: useColorModeValue("teal.50", "gray.900") }}
-    >
+    <Link href={href} role={"group"} display={"block"} p={2} rounded={"md"} _hover={{ bg: useColorModeValue("teal.50", "gray.900") }}>
       <Stack direction={"row"} align={"center"}>
         <Box>
           <Text transition={"all .3s ease"} _groupHover={{ color: "teal.400" }} fontWeight={500}>
@@ -229,15 +189,7 @@ const DesktopSubNav = ({ label, href, subLabel }) => {
           </Text>
           <Text fontSize={"sm"}>{subLabel}</Text>
         </Box>
-        <Flex
-          transition={"all .3s ease"}
-          transform={"translateX(-10px)"}
-          opacity={0}
-          _groupHover={{ opacity: "100%", transform: "translateX(0)" }}
-          justify={"flex-end"}
-          align={"center"}
-          flex={1}
-        >
+        <Flex transition={"all .3s ease"} transform={"translateX(-10px)"} opacity={0} _groupHover={{ opacity: "100%", transform: "translateX(0)" }} justify={"flex-end"} align={"center"} flex={1}>
           <Icon color={"teal.400"} w={5} h={5} as={IoChevronForward} />
         </Flex>
       </Stack>
@@ -273,26 +225,11 @@ const MobileNavItem = ({ label, children, href }) => {
         <Text fontWeight={600} color={useColorModeValue("gray.600", "gray.200")}>
           {label}
         </Text>
-        {children && (
-          <Icon
-            as={IoChevronDown}
-            transition={"all .25s ease-in-out"}
-            transform={isOpen ? "rotate(180deg)" : ""}
-            w={6}
-            h={6}
-          />
-        )}
+        {children && <Icon as={IoChevronDown} transition={"all .25s ease-in-out"} transform={isOpen ? "rotate(180deg)" : ""} w={6} h={6} />}
       </Flex>
 
       <Collapse in={isOpen} animateOpacity style={{ marginTop: "0!important" }}>
-        <Stack
-          mt={2}
-          pl={4}
-          borderLeft={1}
-          borderStyle={"solid"}
-          borderColor={useColorModeValue("gray.200", "gray.700")}
-          align={"start"}
-        >
+        <Stack mt={2} pl={4} borderLeft={1} borderStyle={"solid"} borderColor={useColorModeValue("gray.200", "gray.700")} align={"start"}>
           {children &&
             children.map((child) => (
               <Link key={child.label} py={2} href={child.href}>

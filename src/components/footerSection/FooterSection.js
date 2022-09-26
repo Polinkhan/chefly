@@ -1,22 +1,8 @@
-import {
-  Box,
-  Container,
-  Link,
-  SimpleGrid,
-  Stack,
-  Text,
-  Flex,
-  Tag,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { Box, Container, Link, SimpleGrid, Stack, Text, Flex, Tag, useColorModeValue } from "@chakra-ui/react";
 
 export default function FooterSection() {
   return (
-    <Box
-      bg={useColorModeValue("gray.50", "gray.900")}
-      color={useColorModeValue("gray.700", "gray.200")}
-      h={"45vh"}
-    >
+    <Box bg={useColorModeValue("gray.50", "gray.900")} color={useColorModeValue("gray.700", "gray.200")} h={"45vh"}>
       <Container as={Stack} maxW={"6xl"} py={10}>
         <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} spacing={8}>
           <Stack align={"flex-start"}>
@@ -24,12 +10,7 @@ export default function FooterSection() {
             <Link href={"#"}>Overview</Link>
             <Stack direction={"row"} align={"center"} spacing={2}>
               <Link href={"#"}>Features</Link>
-              <Tag
-                size={"sm"}
-                bg={useColorModeValue("green.300", "green.800")}
-                ml={2}
-                color={"white"}
-              >
+              <Tag size={"sm"} bg={useColorModeValue("green.300", "green.800")} ml={2} color={"white"}>
                 New
               </Tag>
             </Stack>
@@ -64,23 +45,7 @@ export default function FooterSection() {
         </SimpleGrid>
       </Container>
       <Box py={10}>
-        <Flex
-          align={"center"}
-          _before={{
-            content: '""',
-            borderBottom: "1px solid",
-            borderColor: useColorModeValue("gray.200", "gray.700"),
-            flexGrow: 1,
-            mr: 8,
-          }}
-          _after={{
-            content: '""',
-            borderBottom: "1px solid",
-            borderColor: useColorModeValue("gray.200", "gray.700"),
-            flexGrow: 1,
-            ml: 8,
-          }}
-        >
+        <Flex align={"center"} _before={{ content: '""', borderBottom: "1px solid", borderColor: useColorModeValue("gray.200", "gray.700"), flexGrow: 1, mr: 8 }} _after={{ content: '""', borderBottom: "1px solid", borderColor: useColorModeValue("gray.200", "gray.700"), flexGrow: 1, ml: 8 }}>
           <Text as="h1" fontSize={"2xl"} fontWeight={"500"}>
             CHEFLY
           </Text>
