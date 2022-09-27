@@ -128,14 +128,14 @@ function OpenModal({ isOpen, onClose }) {
 const DropZone = ({ onClose }) => {
   const [dropZoneColor, setDropZoneColor] = useState("gray.100");
   const [img, setImg] = useState(null);
-  const { updateDatabase } = useFirebaseContext();
+  const { updateDatabase, myDB } = useFirebaseContext();
   const [shouldBtnLoad, setBtnLoad] = useState(false);
   const toast = useToast();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setBtnLoad(true);
-    updateDatabase({ photoURL: img })
+    updateDatabase({ ...myDB, photoURL: img })
       .then(() => {
         onClose();
       })

@@ -1,20 +1,12 @@
-import { Box, Flex, Text, IconButton, Button, Stack, Collapse, Icon, Popover, PopoverTrigger, PopoverContent, useColorModeValue, useBreakpointValue, useDisclosure, Menu, MenuButton, Avatar, MenuList, Center, MenuDivider, MenuItem } from "@chakra-ui/react";
-import { useEffect } from "react";
-
+import { Box, Flex, Text, IconButton, Button, Stack, Collapse, Icon, Popover, PopoverTrigger, PopoverContent, useColorModeValue, useBreakpointValue, useDisclosure, Menu, MenuButton, Avatar, MenuList, Center, MenuDivider, MenuItem, HStack, VStack } from "@chakra-ui/react";
 import { IoMenu, IoClose, IoChevronDown, IoChevronForward } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { useFirebaseContext } from "../contexts/FirebaseContext";
 
 export default function Navbar() {
   const { isOpen, onToggle } = useDisclosure();
-  const { logout, currentUser, myDB } = useFirebaseContext();
+  const { logout, myDB } = useFirebaseContext();
   console.warn = () => {};
-
-  console.log(currentUser.displayName);
-
-  useEffect(() => {
-    console.log(currentUser);
-  }, [currentUser]);
 
   //Navbar css files
   const NavbarCSS = [
@@ -22,6 +14,7 @@ export default function Navbar() {
       //CSS_0
       position: "sticky",
       top: "0",
+      zIndex: 999999,
     },
     {
       //CSS_1
@@ -95,9 +88,11 @@ export default function Navbar() {
           <IconButton {...NavbarCSS[3]} onClick={onToggle} icon={isOpen ? <IoClose /> : <IoMenu />} />
         </Flex>
         <Flex {...NavbarCSS[4]}>
-          <Link to="/">
-            <Text {...NavbarCSS[5]}>CHAFLY</Text>
-          </Link>
+          <Center>
+            <Link to="/">
+              <Text {...NavbarCSS[5]}>CHAFLY</Text>
+            </Link>
+          </Center>
 
           <Flex {...NavbarCSS[6]}>
             <DesktopNav />
@@ -116,7 +111,7 @@ export default function Navbar() {
               </Center>
               <br />
               <Center>
-                <Text>{currentUser.displayName}</Text>
+                <Text>{myDB.displayName}</Text>
               </Center>
               <br />
               <MenuDivider />
@@ -131,15 +126,13 @@ export default function Navbar() {
       </Flex>
 
       <Collapse in={isOpen} animateOpacity>
-        <MobileNav />
+        <MobileNav onToggle={onToggle} />
       </Collapse>
     </Box>
   );
 }
 
 const DesktopNav = () => {
-  const linkColor = useColorModeValue("gray.600", "gray.200");
-  const linkHoverColor = useColorModeValue("gray.800", "white");
   const popoverContentBgColor = useColorModeValue("white", "gray.800");
 
   return (
@@ -148,19 +141,9 @@ const DesktopNav = () => {
         <Box key={navItem.label}>
           <Popover trigger={"hover"} placement={"bottom-start"}>
             <PopoverTrigger>
-              <Link
-                p={2}
-                href={navItem.href ?? "#"}
-                fontSize={"sm"}
-                fontWeight={500}
-                color={linkColor}
-                _hover={{
-                  textDecoration: "none",
-                  color: linkHoverColor,
-                }}
-              >
-                {navItem.label}
-              </Link>
+              <Center p={2} h={"100%"} cursor={"pointer"}>
+                <Text>{navItem.label}</Text>
+              </Center>
             </PopoverTrigger>
 
             {navItem.children && (
@@ -181,47 +164,38 @@ const DesktopNav = () => {
 
 const DesktopSubNav = ({ label, href, subLabel }) => {
   return (
-    <Link href={href} role={"group"} display={"block"} p={2} rounded={"md"} _hover={{ bg: useColorModeValue("teal.50", "gray.900") }}>
-      <Stack direction={"row"} align={"center"}>
-        <Box>
+    <Link to={href}>
+      <HStack align={"center"} role={"group"} rounded={"md"}>
+        <Box w={"100%"} p={2}>
           <Text transition={"all .3s ease"} _groupHover={{ color: "teal.400" }} fontWeight={500}>
             {label}
           </Text>
           <Text fontSize={"sm"}>{subLabel}</Text>
         </Box>
-        <Flex transition={"all .3s ease"} transform={"translateX(-10px)"} opacity={0} _groupHover={{ opacity: "100%", transform: "translateX(0)" }} justify={"flex-end"} align={"center"} flex={1}>
-          <Icon color={"teal.400"} w={5} h={5} as={IoChevronForward} />
-        </Flex>
-      </Stack>
+        <Center transition={"all .3s ease"} transform={"translateX(-10px)"} opacity={0} _groupHover={{ opacity: "100%", transform: "translateX(0)" }} justify={"flex-end"} align={"center"} flex={1}>
+          <Icon color={"teal.400"} w={5} h={"100%"} as={IoChevronForward} />
+        </Center>
+      </HStack>
     </Link>
   );
 };
 
-const MobileNav = () => {
+const MobileNav = ({ onToggle }) => {
   return (
     <Stack bg={useColorModeValue("white", "gray.800")} p={4} display={{ md: "none" }}>
       {NAV_ITEMS.map((navItem) => (
-        <MobileNavItem key={navItem.label} {...navItem} />
+        <MobileNavItem key={navItem.label} {...navItem} onMainToggle={onToggle} />
       ))}
     </Stack>
   );
 };
 
-const MobileNavItem = ({ label, children, href }) => {
+const MobileNavItem = ({ label, children, onMainToggle }) => {
   const { isOpen, onToggle } = useDisclosure();
 
   return (
     <Stack spacing={4} onClick={children && onToggle}>
-      <Flex
-        py={2}
-        as={Link}
-        href={href ?? "#"}
-        justify={"space-between"}
-        align={"center"}
-        _hover={{
-          textDecoration: "none",
-        }}
-      >
+      <Flex py={2} justify={"space-between"} align={"center"} cursor={"pointer"}>
         <Text fontWeight={600} color={useColorModeValue("gray.600", "gray.200")}>
           {label}
         </Text>
@@ -232,7 +206,7 @@ const MobileNavItem = ({ label, children, href }) => {
         <Stack mt={2} pl={4} borderLeft={1} borderStyle={"solid"} borderColor={useColorModeValue("gray.200", "gray.700")} align={"start"}>
           {children &&
             children.map((child) => (
-              <Link key={child.label} py={2} href={child.href}>
+              <Link key={child.label} py={2} to={child.href} onClick={onMainToggle}>
                 {child.label}
               </Link>
             ))}
@@ -259,17 +233,17 @@ const NAV_ITEMS = [
     ],
   },
   {
-    label: "Games",
+    label: "Friends",
     children: [
       {
-        label: "lorem ipsum",
-        subLabel: "Find your dream design job",
-        href: "#",
+        label: "Add Friends",
+        subLabel: "Add your friend by id",
+        href: "/addfriend",
       },
       {
-        label: "lorem ipsumm",
-        subLabel: "An exclusive list for contract work",
-        href: "#",
+        label: "Manage Friends",
+        subLabel: "Manage your friend list",
+        href: "/managefriend",
       },
     ],
   },

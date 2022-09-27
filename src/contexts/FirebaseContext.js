@@ -1,7 +1,7 @@
 import { auth, db } from "../util/init-firebase";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, updateProfile, updateEmail } from "@firebase/auth";
-import { setDoc, onSnapshot, doc } from "firebase/firestore";
+import { collection, setDoc, onSnapshot, doc, getDoc } from "firebase/firestore";
 
 const FirebaseContext = createContext({
   currentUser: null,
@@ -17,6 +17,7 @@ export const useFirebaseContext = () => useContext(FirebaseContext);
 const FirebaseContextProvider = (props) => {
   const [currentUser, setCurrenUser] = useState(null);
   const [myDB, setMyDB] = useState(null);
+  const [fullDB, setFullDB] = useState(null);
 
   const register = (email, pass) => {
     return createUserWithEmailAndPassword(auth, email, pass);
@@ -32,11 +33,15 @@ const FirebaseContextProvider = (props) => {
   };
 
   const updateMyProfile = (value, input) => {
-    if (value === "displayName") {
+    console.log("line 36");
+    currentUser && updateDatabase({ ...myDB, [value]: input });
+    console.log("line 38", value, input, currentUser);
+    if (currentUser && value === "displayName") {
+      console.log("line 40");
       return updateProfile(auth.currentUser, {
         [value]: input,
       });
-    } else if (value === "email") {
+    } else if (currentUser && value === "email") {
       return updateEmail(auth.currentUser, input);
     }
   };
@@ -47,7 +52,8 @@ const FirebaseContextProvider = (props) => {
   };
 
   const updateDatabase = (updatedDatabase) => {
-    return setDoc(doc(db, "messenger", currentUser.uid), updatedDatabase);
+    console.log("line 55");
+    return setDoc(doc(db, "UsersData", currentUser.uid), updatedDatabase);
   };
 
   useEffect(() => {
@@ -58,20 +64,36 @@ const FirebaseContextProvider = (props) => {
     return () => unSubscribe();
   }, []);
 
-  //"xbZ78MJkmTgBBENlyAFt"
+  const searchUserById = async (id) => {
+    return await getDoc(doc(db, "UsersData", id));
+  };
+
+  const friendRequest = (UserId, UserData) => {
+    return setDoc(doc(db, "UsersData", UserId), UserData);
+  };
 
   useEffect(() => {
     currentUser &&
-      onSnapshot(doc(db, "messenger", currentUser.uid), (snap) => {
+      onSnapshot(doc(db, "UsersData", currentUser.uid), (snap) => {
         if (snap.exists()) {
           setMyDB(snap.data());
         } else {
-          updateDatabase({ photoURL: currentUser.photoURL });
+          console.log(currentUser);
+          updateDatabase({ displayName: currentUser.displayName, photoURL: currentUser.photoURL, sendRequestList: {}, receiveRequestList: {}, friendList: {} });
         }
       });
+
+    onSnapshot(collection(db, "UsersData"), (snap) => {
+      const FULLDATA = {};
+      snap.docs.forEach((doc) => {
+        FULLDATA[doc.id] = doc.data();
+      });
+      console.log("FUll data Update");
+      setFullDB(FULLDATA);
+    });
   }, [currentUser]); //eslint-disable-line
 
-  const value = { currentUser, setCurrenUser, myDB, setMyDB, register, login, logout, signInWithGoogle, updateMyProfile, updateDatabase };
+  const value = { currentUser, setCurrenUser, myDB, fullDB, setMyDB, register, login, logout, signInWithGoogle, updateMyProfile, updateDatabase, searchUserById, friendRequest };
 
   return <FirebaseContext.Provider value={value}>{props.children}</FirebaseContext.Provider>;
 };

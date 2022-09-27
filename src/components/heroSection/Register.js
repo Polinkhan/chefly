@@ -21,30 +21,29 @@ export default function Register() {
     e.preventDefault();
     setBtnLoad(true);
     register(email, pass)
-      .then((response) => {
+      .then(async (response) => {
+        await setCurrenUser({ ...response.user, displayName: name.first + " " + name.last });
         updateMyProfile("displayName", name.first + " " + name.last)
-          .then(() => setCurrenUser({ ...response.user }))
+          .then(() => {})
           .catch((error) =>
             toast({
-              description: error.message,
+              description: error.message + "update Error",
               status: "error",
-              duration: 2000,
+              duration: 4000,
               isClosable: true,
             })
           )
-          .finally(() => {
-            setBtnLoad(false);
-          });
+          .finally(() => {});
       })
       .catch((error) =>
         toast({
-          description: error.message,
+          description: error.message + "reg Error",
           status: "error",
-          duration: 2000,
+          duration: 4000,
           isClosable: true,
         })
       )
-      .finally(() => {});
+      .finally(() => setBtnLoad(false));
   };
 
   return (
@@ -64,12 +63,12 @@ export default function Register() {
               </FormControl>
               <FormControl id="email" isRequired>
                 <FormLabel>Last Name</FormLabel>
-                <Input autoComplete="off" autoFocus type="text" rounded={"full"} value={name.last} onChange={(e) => setName({ first: name.first, last: e.target.value })} />
+                <Input autoComplete="off" type="text" rounded={"full"} value={name.last} onChange={(e) => setName({ first: name.first, last: e.target.value })} />
               </FormControl>
             </HStack>
             <FormControl id="email" isRequired>
               <FormLabel>Email address</FormLabel>
-              <Input autoComplete="off" autoFocus type="email" rounded={"full"} value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Input autoComplete="off" type="email" rounded={"full"} value={email} onChange={(e) => setEmail(e.target.value)} />
             </FormControl>
             <FormControl id="password" isRequired>
               <FormLabel>Password</FormLabel>

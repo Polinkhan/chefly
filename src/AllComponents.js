@@ -8,7 +8,9 @@ import PrivateRoute from "./components/privateRoute/PrivateRoute";
 import PreventRoute from "./components/privateRoute/PreventRoute";
 import PageLaoding from "./components/PageLaoding";
 import MyAccount from "./components/account/MyAccount";
+import AddFriend from "./components/friendSection/AddFriend";
+import ManageFriend from "./components/friendSection/ManageFriend";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useFirebaseContext } from "./contexts/FirebaseContext";
 
-export { Navbar, NotFound, Login, Register, HeroSection, HomeSection, PrivateRoute, PreventRoute, PageLaoding, MyAccount, Router, Routes, Route, useFirebaseContext };
+export { Navbar, NotFound, Login, Register, HeroSection, HomeSection, PrivateRoute, PreventRoute, PageLaoding, MyAccount, Router, Routes, Route, useFirebaseContext, AddFriend, ManageFriend };
