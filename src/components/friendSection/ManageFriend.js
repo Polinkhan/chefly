@@ -20,7 +20,8 @@ const ManageFriend = () => {
   };
 
   const menu = ["friendList", "sendRequestList", "receiveRequestList"];
-  const { myDB } = useFirebaseContext();
+  const { fullDB, currentUser } = useFirebaseContext();
+  const myDB = fullDB[currentUser.uid];
 
   return (
     <Center h="calc(100vh - 60px)" w={"100%"}>

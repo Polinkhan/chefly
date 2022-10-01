@@ -2,8 +2,8 @@ import "./App.css";
 import { Navbar, NotFound, Login, Register, HeroSection, HomeSection, PrivateRoute, PreventRoute, PageLaoding, MyAccount, Router, Routes, Route, useFirebaseContext, AddFriend, ManageFriend } from "./AllComponents";
 
 function App() {
-  const { currentUser, myDB } = useFirebaseContext();
-  return (currentUser && myDB) || currentUser === false ? (
+  const { currentUser, fullDB } = useFirebaseContext();
+  return (currentUser && fullDB) || currentUser === false ? (
     <Router>
       {currentUser && <Navbar />}
       <Routes>

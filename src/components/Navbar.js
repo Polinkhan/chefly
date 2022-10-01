@@ -5,7 +5,8 @@ import { useFirebaseContext } from "../contexts/FirebaseContext";
 
 export default function Navbar() {
   const { isOpen, onToggle } = useDisclosure();
-  const { logout, myDB } = useFirebaseContext();
+  const { logout, fullDB, currentUser } = useFirebaseContext();
+  const myDB = fullDB[currentUser.uid];
   console.warn = () => {};
 
   //Navbar css files
@@ -82,53 +83,55 @@ export default function Navbar() {
   ];
 
   return (
-    <Box {...NavbarCSS[0]}>
-      <Flex {...NavbarCSS[1]}>
-        <Flex {...NavbarCSS[2]}>
-          <IconButton {...NavbarCSS[3]} onClick={onToggle} icon={isOpen ? <IoClose /> : <IoMenu />} />
-        </Flex>
-        <Flex {...NavbarCSS[4]}>
-          <Center>
-            <Link to="/">
-              <Text {...NavbarCSS[5]}>CHAFLY</Text>
-            </Link>
-          </Center>
-
-          <Flex {...NavbarCSS[6]}>
-            <DesktopNav />
+    fullDB[currentUser.uid] && (
+      <Box {...NavbarCSS[0]}>
+        <Flex {...NavbarCSS[1]}>
+          <Flex {...NavbarCSS[2]}>
+            <IconButton {...NavbarCSS[3]} onClick={onToggle} icon={isOpen ? <IoClose /> : <IoMenu />} />
           </Flex>
+          <Flex {...NavbarCSS[4]}>
+            <Center>
+              <Link to="/">
+                <Text {...NavbarCSS[5]}>CHAFLY</Text>
+              </Link>
+            </Center>
+
+            <Flex {...NavbarCSS[6]}>
+              <DesktopNav />
+            </Flex>
+          </Flex>
+
+          <Stack {...NavbarCSS[7]}>
+            <Menu>
+              <MenuButton {...NavbarCSS[8]}>
+                <Avatar size={"sm"} src={myDB.photoURL} />
+              </MenuButton>
+              <MenuList alignItems={"center"}>
+                <br />
+                <Center>
+                  <Avatar size={"2xl"} src={myDB.photoURL} />
+                </Center>
+                <br />
+                <Center>
+                  <Text>{myDB.displayName}</Text>
+                </Center>
+                <br />
+                <MenuDivider />
+                <MenuItem>My Profile</MenuItem>
+                <Link to="/account">
+                  <MenuItem>Account Settings</MenuItem>
+                </Link>
+                <MenuItem onClick={() => logout()}>Log Out</MenuItem>
+              </MenuList>
+            </Menu>
+          </Stack>
         </Flex>
 
-        <Stack {...NavbarCSS[7]}>
-          <Menu>
-            <MenuButton {...NavbarCSS[8]}>
-              <Avatar size={"sm"} src={myDB.photoURL} />
-            </MenuButton>
-            <MenuList alignItems={"center"}>
-              <br />
-              <Center>
-                <Avatar size={"2xl"} src={myDB.photoURL} />
-              </Center>
-              <br />
-              <Center>
-                <Text>{myDB.displayName}</Text>
-              </Center>
-              <br />
-              <MenuDivider />
-              <MenuItem>My Profile</MenuItem>
-              <Link to="/account">
-                <MenuItem>Account Settings</MenuItem>
-              </Link>
-              <MenuItem onClick={() => logout()}>Log Out</MenuItem>
-            </MenuList>
-          </Menu>
-        </Stack>
-      </Flex>
-
-      <Collapse in={isOpen} animateOpacity>
-        <MobileNav onToggle={onToggle} />
-      </Collapse>
-    </Box>
+        <Collapse in={isOpen} animateOpacity>
+          <MobileNav onToggle={onToggle} />
+        </Collapse>
+      </Box>
+    )
   );
 }
 

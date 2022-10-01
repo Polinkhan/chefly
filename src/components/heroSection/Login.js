@@ -12,11 +12,9 @@ export default function Login() {
   const [shouldBtnLoad, setBtnLoad] = useState(false);
   const toast = useToast();
 
-  const { login, signInWithGoogle } = useFirebaseContext();
+  const { login, signInWithGoogle, updateDatabase } = useFirebaseContext();
   const navigate = useNavigate();
   const location = useLocation();
-
-  console.log(location);
 
   const handlesubmit = async (e) => {
     e.preventDefault();
@@ -83,7 +81,10 @@ export default function Login() {
             rounded={"full"}
             variant={"outline"}
             onClick={() => {
-              signInWithGoogle();
+              signInWithGoogle().then((response) => {
+                const user = response.user;
+                updateDatabase({ displayName: user.displayName, photoURL: user.photoURL, email: user.email, sendRequestList: {}, receiveRequestList: {}, friendList: {} }, user.uid);
+              });
             }}
           >
             Sign In with Google

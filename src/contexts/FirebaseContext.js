@@ -16,7 +16,6 @@ export const useFirebaseContext = () => useContext(FirebaseContext);
 
 const FirebaseContextProvider = (props) => {
   const [currentUser, setCurrenUser] = useState(null);
-  const [myDB, setMyDB] = useState(null);
   const [fullDB, setFullDB] = useState(null);
 
   const register = (email, pass) => {
@@ -32,32 +31,18 @@ const FirebaseContextProvider = (props) => {
     return signInWithPopup(auth, provider);
   };
 
-  const updateMyProfile = (value, input) => {
-    console.log("line 36");
-    currentUser && updateDatabase({ ...myDB, [value]: input });
-    console.log("line 38", value, input, currentUser);
-    if (currentUser && value === "displayName") {
-      console.log("line 40");
-      return updateProfile(auth.currentUser, {
-        [value]: input,
-      });
-    } else if (currentUser && value === "email") {
-      return updateEmail(auth.currentUser, input);
-    }
-  };
-
   const logout = () => {
-    setMyDB({});
     return signOut(auth);
   };
 
-  const updateDatabase = (updatedDatabase) => {
-    console.log("line 55");
-    return setDoc(doc(db, "UsersData", currentUser.uid), updatedDatabase);
+  const updateDatabase = (updatedData, id) => {
+    console.log(updatedData, currentUser.uid);
+    return setDoc(doc(db, "UsersData", id), { ...fullDB[id], ...updatedData });
   };
 
   useEffect(() => {
     const unSubscribe = onAuthStateChanged(auth, (user) => {
+      console.log(user);
       if (user) setCurrenUser(user);
       else setCurrenUser(false);
     });
@@ -73,27 +58,19 @@ const FirebaseContextProvider = (props) => {
   };
 
   useEffect(() => {
-    currentUser &&
-      onSnapshot(doc(db, "UsersData", currentUser.uid), (snap) => {
-        if (snap.exists()) {
-          setMyDB(snap.data());
-        } else {
-          console.log(currentUser);
-          updateDatabase({ displayName: currentUser.displayName, photoURL: currentUser.photoURL, sendRequestList: {}, receiveRequestList: {}, friendList: {} });
-        }
-      });
-
-    onSnapshot(collection(db, "UsersData"), (snap) => {
+    const unsub = onSnapshot(collection(db, "UsersData"), (snap) => {
       const FULLDATA = {};
       snap.docs.forEach((doc) => {
         FULLDATA[doc.id] = doc.data();
       });
       console.log("FUll data Update");
       setFullDB(FULLDATA);
-    });
-  }, [currentUser]); //eslint-disable-line
 
-  const value = { currentUser, setCurrenUser, myDB, fullDB, setMyDB, register, login, logout, signInWithGoogle, updateMyProfile, updateDatabase, searchUserById, friendRequest };
+      return () => unsub();
+    });
+  }, []); //eslint-disable-line
+
+  const value = { currentUser, setCurrenUser, fullDB, register, login, logout, signInWithGoogle, updateDatabase, searchUserById, friendRequest };
 
   return <FirebaseContext.Provider value={value}>{props.children}</FirebaseContext.Provider>;
 };

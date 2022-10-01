@@ -11,6 +11,7 @@ const AddFriend = () => {
   const [sendBtnLoad, setSendBtnLoad] = useState(false);
 
   const { searchUserById, friendRequest, currentUser, fullDB } = useFirebaseContext();
+  const myDB = fullDB[currentUser.uid];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,12 +28,23 @@ const AddFriend = () => {
 
   const handleSendRequest = () => {
     setSendBtnLoad(true);
-    const cloneFullDB = { ...fullDB };
-    const myNewDB = cloneFullDB[currentUser.uid];
-    const userNewDB = cloneFullDB[userId];
-    myNewDB.sendRequestList[userId] = new Date().getTime();
-    userNewDB.receiveRequestList[currentUser.uid] = new Date().getTime();
-    friendRequest(currentUser.uid, myNewDB).then(friendRequest(userId, userNewDB).then(setSendBtnLoad(false)));
+    if (myDB.friendList[userId]) {
+      console.log("user already in your friend List");
+      setSendBtnLoad(false);
+    } else if (myDB.sendRequestList[userId]) {
+      console.log("user already in your Send Request List");
+      setSendBtnLoad(false);
+    } else if (myDB.receiveRequestList[userId]) {
+      console.log("user already in your Receive Request List");
+      setSendBtnLoad(false);
+    } else {
+      const cloneFullDB = { ...fullDB };
+      const myNewDB = cloneFullDB[currentUser.uid];
+      const userNewDB = cloneFullDB[userId];
+      myNewDB.sendRequestList[userId] = new Date().getTime();
+      userNewDB.receiveRequestList[currentUser.uid] = new Date().getTime();
+      friendRequest(currentUser.uid, myNewDB).then(() => friendRequest(userId, userNewDB).then(() => setSendBtnLoad(false)));
+    }
   };
 
   return (

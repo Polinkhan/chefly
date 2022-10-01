@@ -13,7 +13,7 @@ export default function Register() {
   const [pass, setPass] = useState("");
   const [shouldBtnLoad, setBtnLoad] = useState(false);
 
-  const { register, setCurrenUser, updateMyProfile } = useFirebaseContext();
+  const { register, currentUser, setCurrenUser, updateDatabase } = useFirebaseContext();
 
   const toast = useToast();
 
@@ -21,9 +21,9 @@ export default function Register() {
     e.preventDefault();
     setBtnLoad(true);
     register(email, pass)
-      .then(async (response) => {
-        await setCurrenUser({ ...response.user, displayName: name.first + " " + name.last });
-        updateMyProfile("displayName", name.first + " " + name.last)
+      .then((response) => {
+        setCurrenUser(response.user);
+        updateDatabase({ displayName: name.first + " " + name.last, photoURL: null, email: null, sendRequestList: {}, receiveRequestList: {}, friendList: {} }, response.user.uid)
           .then(() => {})
           .catch((error) =>
             toast({
@@ -32,8 +32,8 @@ export default function Register() {
               duration: 4000,
               isClosable: true,
             })
-          )
-          .finally(() => {});
+          );
+        //.finally(() => {});
       })
       .catch((error) =>
         toast({
@@ -43,7 +43,9 @@ export default function Register() {
           isClosable: true,
         })
       )
-      .finally(() => setBtnLoad(false));
+      .finally(() => {
+        setBtnLoad(false);
+      });
   };
 
   return (

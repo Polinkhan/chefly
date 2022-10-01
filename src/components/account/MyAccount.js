@@ -1,7 +1,7 @@
-import { Avatar, Button, IconButton, FormControl, FormLabel, useDisclosure, Input, InputGroup, InputRightElement, Box, Center, Container, Stack, Text, VStack, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, useToast, Image } from "@chakra-ui/react";
+import { Avatar, Button, IconButton, FormControl, FormLabel, useDisclosure, Input, InputGroup, InputRightElement, Box, Center, Container, Stack, Text, VStack, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, useToast, Image, HStack, Tooltip } from "@chakra-ui/react";
 import { useState } from "react";
 import { FaRegEdit, FaCheck } from "react-icons/fa";
-import { IoCloudUploadOutline } from "react-icons/io5";
+import { IoCloudUploadOutline, IoCopyOutline } from "react-icons/io5";
 import { useFirebaseContext } from "../../contexts/FirebaseContext";
 import { useDropzone } from "react-dropzone";
 import { useEffect } from "react";
@@ -10,37 +10,60 @@ import Resizer from "react-image-file-resizer";
 
 const MyAccount = () => {
   const { isOpen, onClose, onOpen } = useDisclosure();
-  const { currentUser, myDB } = useFirebaseContext();
+  const { currentUser, fullDB } = useFirebaseContext();
+  const myDB = fullDB[currentUser.uid];
 
   const ProfileItems = ["displayName", "email", "phoneNumber"];
+
+  const [tooltip, setTooltip] = useState("Click to Copy");
 
   return (
     <Center h={"calc(100vh - 60px)"}>
       <Container maxW={"6xl"}>
         <Center h={"80vh"} w={"100%"} boxShadow={"lg"}>
-          <Center h={"80%"} w={{ xl: "80%", base: "95%" }} bg={"gray.200"}>
-            <VStack h={"100%"} w={"100%"} pb={"4"}>
-              <Box h={"15%"}>
-                <Avatar transform={"translateY(-50%)"} size={"2xl"} src={myDB.photoURL} cursor={"pointer"} transition={"0.2s"} border={"8px solid white"}>
-                  <IconButton h={"100%"} w={"100%"} rounded={"50%"} variant={""} fontSize={"2xl"} color={"white"} icon={<FaRegEdit />} position={"absolute"} transition={"0.2s"} opacity={"0"} onClick={onOpen} _hover={{ opacity: ".5", backgroundColor: "black" }}></IconButton>
-                </Avatar>
-              </Box>
-              <VStack h={"70%"} w={{ lg: "80%", base: "95%" }}>
-                {ProfileItems.map((item, index) => (
-                  <Center key={index} minW={"70%"} flexDirection={{ md: "row", base: "column" }} boxShadow={"md"} p={"4"} bg={"teal.200"} rounded={"lg"}>
-                    <Text w={"150px"} textTransform={"capitalize"}>
-                      {item}:
-                    </Text>
-                    <EditAble value={item} />
-                  </Center>
-                ))}
-                <Center minW={"70%"} flexDirection={{ md: "row", base: "column" }} boxShadow={"md"} p={"4"} bg={"teal.200"} rounded={"lg"}>
-                  <Text w={"150px"}>ID:</Text>
-                  <Text>{currentUser.uid}</Text>
-                </Center>
-              </VStack>
+          <VStack h={"70%"} w={{ lg: "80%", base: "95%" }}>
+            <HStack h={"20%"} w={"100%"}>
+              <HStack w={"150px"} justifyContent={"end"} fontWeight={"bold"}>
+                <Text>Profile Picture</Text>
+              </HStack>
+              <Avatar p={"1"} size={"xl"} src={myDB.photoURL} bg={"white"} cursor={"pointer"} border={"4px solid gray"}>
+                <IconButton h={"100%"} w={"100%"} rounded={"50%"} variant={""} fontSize={"2xl"} color={"white"} icon={<FaRegEdit />} position={"absolute"} transition={"0.2s"} opacity={"0"} onClick={onOpen} _hover={{ opacity: ".5", backgroundColor: "black" }}></IconButton>
+              </Avatar>
+            </HStack>
+            <VStack h={"70%"} w={{ lg: "80%", base: "95%" }}>
+              {ProfileItems.map((item, index) => (
+                <HStack h={"15%"} w={"100%"} key={index}>
+                  <HStack w={"150px"} justifyContent={"end"} fontWeight={"bold"}>
+                    <Text>{item}</Text>
+                  </HStack>
+                  <EditAble value={item} />
+                </HStack>
+              ))}
+              <HStack h={"15%"} w={"100%"}>
+                <HStack w={"150px"} justifyContent={"end"} fontWeight={"bold"}>
+                  <Text>ID</Text>
+                </HStack>
+                <InputGroup pl={8}>
+                  <InputRightElement>
+                    <Tooltip hasArrow label={tooltip}>
+                      <IconButton
+                        icon={<IoCopyOutline />}
+                        variant={"ghost"}
+                        onClick={() => {
+                          setTooltip("Copied !!");
+                          setTimeout(() => {
+                            setTooltip("Click to Copy");
+                          }, 2000);
+                          navigator.clipboard.writeText(currentUser.uid);
+                        }}
+                      />
+                    </Tooltip>
+                  </InputRightElement>
+                  <Input isDisabled value={currentUser.uid} />
+                </InputGroup>
+              </HStack>
             </VStack>
-          </Center>
+          </VStack>
         </Center>
         <OpenModal isOpen={isOpen} onClose={onClose} />
       </Container>
@@ -49,62 +72,66 @@ const MyAccount = () => {
 };
 
 const EditAble = ({ value }) => {
-  const onEdit = { variant: "flushed", isReadOnly: false };
-  const offEdit = { variant: "ghost", isReadOnly: true };
+  const onEdit = { isReadOnly: false };
+  const offEdit = { isReadOnly: true };
 
-  const { currentUser, setCurrenUser, updateMyProfile } = useFirebaseContext();
-  const [input, setInput] = useState(currentUser[value] || "");
+  const { currentUser, fullDB, updateDatabase } = useFirebaseContext();
+  const [input, setInput] = useState(fullDB[currentUser.uid][value] || "");
   const [edit, setEdit] = useState(offEdit);
   const [isEditing, setEditing] = useState(false);
   const [shouldLoad, setLoad] = useState(false);
+  const [tooltip, setTooltip] = useState("edit");
   const toast = useToast();
 
   return (
-    <InputGroup>
+    <InputGroup pl={8}>
       <InputRightElement>
-        <IconButton
-          display={isEditing ? "none" : "flex"}
-          icon={<FaRegEdit />}
-          variant={"solid"}
-          // isLoading
-          onClick={() => {
-            setEdit(onEdit);
-            setEditing(true);
-          }}
-        />
-        <IconButton
-          display={isEditing ? "flex" : "none"}
-          icon={<FaCheck />}
-          variant={"solid"}
-          isLoading={shouldLoad}
-          onClick={() => {
-            setLoad(true);
-            updateMyProfile(value, input)
-              .then(() => {
-                setLoad(false);
-                setCurrenUser({
-                  ...currentUser,
-                  [value]: input,
+        <Tooltip hasArrow label={tooltip}>
+          <IconButton
+            display={isEditing ? "none" : "flex"}
+            icon={<FaRegEdit />}
+            // isLoading
+            variant={"ghost"}
+            onClick={() => {
+              setEdit(onEdit);
+              setEditing(true);
+              setTooltip("Save");
+            }}
+          />
+        </Tooltip>
+        <Tooltip hasArrow label={tooltip}>
+          <IconButton
+            display={isEditing ? "flex" : "none"}
+            icon={<FaCheck />}
+            isLoading={shouldLoad}
+            variant={"ghost"}
+            onClick={() => {
+              console.log(fullDB[currentUser.uid]);
+              setLoad(true);
+              updateDatabase({ [value]: input }, currentUser.uid)
+                .then(() => {
+                  setLoad(false);
+                })
+                .catch((error) => {
+                  setInput(currentUser[value]);
+                  console.log(error.message);
+                  toast({
+                    description: error.message,
+                    status: "error",
+                    duration: 2000,
+                    isClosable: true,
+                  });
+                })
+                .finally(() => {
+                  setEdit(offEdit);
+                  setEditing(false);
+                  setTooltip("edit");
                 });
-              })
-              .catch((error) => {
-                setInput(currentUser[value]);
-                console.log(error.message);
-                toast({
-                  description: error.message,
-                  status: "error",
-                  duration: 2000,
-                  isClosable: true,
-                });
-              })
-              .finally(() => {
-                setEdit(offEdit);
-                setEditing(false);
-              });
-          }}
-        />
+            }}
+          />
+        </Tooltip>
       </InputRightElement>
-      <Input textAlign={"center"} value={input} onChange={(e) => setInput(e.target.value)} bg={"transparent"} color={"black"} {...edit} />
+      <Input value={input} onChange={(e) => setInput(e.target.value)} bg={"transparent"} color={"black"} {...edit} />
     </InputGroup>
   );
 };
@@ -128,14 +155,14 @@ function OpenModal({ isOpen, onClose }) {
 const DropZone = ({ onClose }) => {
   const [dropZoneColor, setDropZoneColor] = useState("gray.100");
   const [img, setImg] = useState(null);
-  const { updateDatabase, myDB } = useFirebaseContext();
+  const { updateDatabase, currentUser } = useFirebaseContext();
   const [shouldBtnLoad, setBtnLoad] = useState(false);
   const toast = useToast();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setBtnLoad(true);
-    updateDatabase({ ...myDB, photoURL: img })
+    updateDatabase({ photoURL: img }, currentUser.uid)
       .then(() => {
         onClose();
       })
