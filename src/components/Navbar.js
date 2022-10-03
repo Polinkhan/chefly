@@ -1,11 +1,8 @@
-import { Box, Flex, Text, IconButton, Button, Stack, Collapse, Icon, Popover, PopoverTrigger, PopoverContent, useColorModeValue, useBreakpointValue, useDisclosure, Menu, MenuButton, Avatar, MenuList, Center, MenuDivider, MenuItem, HStack, VStack } from "@chakra-ui/react";
-import { IoMenu, IoClose, IoChevronDown, IoChevronForward } from "react-icons/io5";
+import { Chakra, icons, Contexts } from "../AllComponents";
 import { Link } from "react-router-dom";
-import { useFirebaseContext } from "../contexts/FirebaseContext";
-
 export default function Navbar() {
-  const { isOpen, onToggle } = useDisclosure();
-  const { logout, fullDB, currentUser } = useFirebaseContext();
+  const { isOpen, onToggle } = Chakra.useDisclosure();
+  const { logout, fullDB, currentUser } = Contexts.useFirebaseContext();
   const myDB = fullDB[currentUser.uid];
   console.warn = () => {};
 
@@ -19,14 +16,14 @@ export default function Navbar() {
     },
     {
       //CSS_1
-      bg: useColorModeValue("white", "gray.800"),
-      color: useColorModeValue("gray.600", "white"),
+      bg: Chakra.useColorModeValue("white", "gray.800"),
+      color: Chakra.useColorModeValue("gray.600", "white"),
       minH: "60px",
       py: { base: 2 },
       px: { base: 4 },
       borderBottom: 1,
       borderStyle: "solid",
-      borderColor: useColorModeValue("gray.200", "gray.900"),
+      borderColor: Chakra.useColorModeValue("gray.200", "gray.900"),
       align: "center",
     },
     {
@@ -48,9 +45,9 @@ export default function Navbar() {
     },
     {
       //CSS_5
-      textAlign: useBreakpointValue({ base: "center", md: "left" }),
+      textAlign: Chakra.useBreakpointValue({ base: "center", md: "left" }),
       fontFamily: "heading",
-      color: useColorModeValue("gray.800", "white"),
+      color: Chakra.useColorModeValue("gray.800", "white"),
       fontWeight: "500",
       fontSize: "xl",
     },
@@ -68,7 +65,7 @@ export default function Navbar() {
     },
     {
       //CSS_8
-      as: Button,
+      as: Chakra.Button,
       rounded: "full",
       variant: "link",
       cursor: "pointer",
@@ -84,138 +81,208 @@ export default function Navbar() {
 
   return (
     fullDB[currentUser.uid] && (
-      <Box {...NavbarCSS[0]}>
-        <Flex {...NavbarCSS[1]}>
-          <Flex {...NavbarCSS[2]}>
-            <IconButton {...NavbarCSS[3]} onClick={onToggle} icon={isOpen ? <IoClose /> : <IoMenu />} />
-          </Flex>
-          <Flex {...NavbarCSS[4]}>
-            <Center>
+      <Chakra.Box {...NavbarCSS[0]}>
+        <Chakra.Flex {...NavbarCSS[1]}>
+          <Chakra.Flex {...NavbarCSS[2]}>
+            <Chakra.IconButton
+              {...NavbarCSS[3]}
+              onClick={onToggle}
+              icon={isOpen ? <icons.IoClose /> : <icons.IoMenu />}
+            />
+          </Chakra.Flex>
+          <Chakra.Flex {...NavbarCSS[4]}>
+            <Chakra.Center>
               <Link to="/">
-                <Text {...NavbarCSS[5]}>CHAFLY</Text>
+                <Chakra.Text {...NavbarCSS[5]}>CHAFLY</Chakra.Text>
               </Link>
-            </Center>
+            </Chakra.Center>
 
-            <Flex {...NavbarCSS[6]}>
+            <Chakra.Flex {...NavbarCSS[6]}>
               <DesktopNav />
-            </Flex>
-          </Flex>
+            </Chakra.Flex>
+          </Chakra.Flex>
 
-          <Stack {...NavbarCSS[7]}>
-            <Menu>
-              <MenuButton {...NavbarCSS[8]}>
-                <Avatar size={"sm"} src={myDB.photoURL} />
-              </MenuButton>
-              <MenuList alignItems={"center"}>
+          <Chakra.Stack {...NavbarCSS[7]}>
+            <Chakra.Menu>
+              <Chakra.MenuButton {...NavbarCSS[8]}>
+                <Chakra.Avatar size={"sm"} src={myDB.photoURL} />
+              </Chakra.MenuButton>
+              <Chakra.MenuList alignItems={"center"}>
                 <br />
-                <Center>
-                  <Avatar size={"2xl"} src={myDB.photoURL} />
-                </Center>
+                <Chakra.Center>
+                  <Chakra.Avatar size={"2xl"} src={myDB.photoURL} />
+                </Chakra.Center>
                 <br />
-                <Center>
-                  <Text>{myDB.displayName}</Text>
-                </Center>
+                <Chakra.Center>
+                  <Chakra.Text>{myDB.displayName}</Chakra.Text>
+                </Chakra.Center>
                 <br />
-                <MenuDivider />
-                <MenuItem>My Profile</MenuItem>
+                <Chakra.MenuDivider />
+                <Chakra.MenuItem>My Profile</Chakra.MenuItem>
                 <Link to="/account">
-                  <MenuItem>Account Settings</MenuItem>
+                  <Chakra.MenuItem>Account Settings</Chakra.MenuItem>
                 </Link>
-                <MenuItem onClick={() => logout()}>Log Out</MenuItem>
-              </MenuList>
-            </Menu>
-          </Stack>
-        </Flex>
+                <Chakra.MenuItem onClick={() => logout()}>
+                  Log Out
+                </Chakra.MenuItem>
+              </Chakra.MenuList>
+            </Chakra.Menu>
+          </Chakra.Stack>
+        </Chakra.Flex>
 
-        <Collapse in={isOpen} animateOpacity>
+        <Chakra.Collapse in={isOpen} animateOpacity>
           <MobileNav onToggle={onToggle} />
-        </Collapse>
-      </Box>
+        </Chakra.Collapse>
+      </Chakra.Box>
     )
   );
 }
 
 const DesktopNav = () => {
-  const popoverContentBgColor = useColorModeValue("white", "gray.800");
+  const popoverContentBgColor = Chakra.useColorModeValue("white", "gray.800");
 
   return (
-    <Stack direction={"row"} spacing={4}>
+    <Chakra.Stack direction={"row"} spacing={4}>
       {NAV_ITEMS.map((navItem) => (
-        <Box key={navItem.label}>
-          <Popover trigger={"hover"} placement={"bottom-start"}>
-            <PopoverTrigger>
-              <Center p={2} h={"100%"} cursor={"pointer"}>
-                <Text>{navItem.label}</Text>
-              </Center>
-            </PopoverTrigger>
+        <Chakra.Box key={navItem.label}>
+          <Chakra.Popover trigger={"hover"} placement={"bottom-start"}>
+            <Chakra.PopoverTrigger>
+              <Chakra.Center p={2} h={"100%"} cursor={"pointer"}>
+                <Chakra.Text>{navItem.label}</Chakra.Text>
+              </Chakra.Center>
+            </Chakra.PopoverTrigger>
 
             {navItem.children && (
-              <PopoverContent border={0} boxShadow={"xl"} bg={popoverContentBgColor} p={4} rounded={"xl"} minW={"sm"}>
-                <Stack>
+              <Chakra.PopoverContent
+                border={0}
+                boxShadow={"xl"}
+                bg={popoverContentBgColor}
+                p={4}
+                rounded={"xl"}
+                minW={"sm"}
+              >
+                <Chakra.Stack>
                   {navItem.children.map((child) => (
                     <DesktopSubNav key={child.label} {...child} />
                   ))}
-                </Stack>
-              </PopoverContent>
+                </Chakra.Stack>
+              </Chakra.PopoverContent>
             )}
-          </Popover>
-        </Box>
+          </Chakra.Popover>
+        </Chakra.Box>
       ))}
-    </Stack>
+    </Chakra.Stack>
   );
 };
 
 const DesktopSubNav = ({ label, href, subLabel }) => {
   return (
     <Link to={href}>
-      <HStack align={"center"} role={"group"} rounded={"md"}>
-        <Box w={"100%"} p={2}>
-          <Text transition={"all .3s ease"} _groupHover={{ color: "teal.400" }} fontWeight={500}>
+      <Chakra.HStack align={"center"} role={"group"} rounded={"md"}>
+        <Chakra.Box w={"100%"} p={2}>
+          <Chakra.Text
+            transition={"all .3s ease"}
+            _groupHover={{ color: "teal.400" }}
+            fontWeight={500}
+          >
             {label}
-          </Text>
-          <Text fontSize={"sm"}>{subLabel}</Text>
-        </Box>
-        <Center transition={"all .3s ease"} transform={"translateX(-10px)"} opacity={0} _groupHover={{ opacity: "100%", transform: "translateX(0)" }} justify={"flex-end"} align={"center"} flex={1}>
-          <Icon color={"teal.400"} w={5} h={"100%"} as={IoChevronForward} />
-        </Center>
-      </HStack>
+          </Chakra.Text>
+          <Chakra.Text fontSize={"sm"}>{subLabel}</Chakra.Text>
+        </Chakra.Box>
+        <Chakra.Center
+          transition={"all .3s ease"}
+          transform={"translateX(-10px)"}
+          opacity={0}
+          _groupHover={{ opacity: "100%", transform: "translateX(0)" }}
+          justify={"flex-end"}
+          align={"center"}
+          flex={1}
+        >
+          <Chakra.Icon
+            color={"teal.400"}
+            w={5}
+            h={"100%"}
+            as={icons.IoChevronForward}
+          />
+        </Chakra.Center>
+      </Chakra.HStack>
     </Link>
   );
 };
 
 const MobileNav = ({ onToggle }) => {
   return (
-    <Stack bg={useColorModeValue("white", "gray.800")} p={4} display={{ md: "none" }}>
+    <Chakra.Stack
+      bg={Chakra.useColorModeValue("white", "gray.800")}
+      p={4}
+      display={{ md: "none" }}
+    >
       {NAV_ITEMS.map((navItem) => (
-        <MobileNavItem key={navItem.label} {...navItem} onMainToggle={onToggle} />
+        <MobileNavItem
+          key={navItem.label}
+          {...navItem}
+          onMainToggle={onToggle}
+        />
       ))}
-    </Stack>
+    </Chakra.Stack>
   );
 };
 
 const MobileNavItem = ({ label, children, onMainToggle }) => {
-  const { isOpen, onToggle } = useDisclosure();
+  const { isOpen, onToggle } = Chakra.useDisclosure();
 
   return (
-    <Stack spacing={4} onClick={children && onToggle}>
-      <Flex py={2} justify={"space-between"} align={"center"} cursor={"pointer"}>
-        <Text fontWeight={600} color={useColorModeValue("gray.600", "gray.200")}>
+    <Chakra.Stack spacing={4} onClick={children && onToggle}>
+      <Chakra.Flex
+        py={2}
+        justify={"space-between"}
+        align={"center"}
+        cursor={"pointer"}
+      >
+        <Chakra.Text
+          fontWeight={600}
+          color={Chakra.useColorModeValue("gray.600", "gray.200")}
+        >
           {label}
-        </Text>
-        {children && <Icon as={IoChevronDown} transition={"all .25s ease-in-out"} transform={isOpen ? "rotate(180deg)" : ""} w={6} h={6} />}
-      </Flex>
+        </Chakra.Text>
+        {children && (
+          <Chakra.Icon
+            as={icons.IoChevronDown}
+            transition={"all .25s ease-in-out"}
+            transform={isOpen ? "rotate(180deg)" : ""}
+            w={6}
+            h={6}
+          />
+        )}
+      </Chakra.Flex>
 
-      <Collapse in={isOpen} animateOpacity style={{ marginTop: "0!important" }}>
-        <Stack mt={2} pl={4} borderLeft={1} borderStyle={"solid"} borderColor={useColorModeValue("gray.200", "gray.700")} align={"start"}>
+      <Chakra.Collapse
+        in={isOpen}
+        animateOpacity
+        style={{ marginTop: "0!important" }}
+      >
+        <Chakra.Stack
+          mt={2}
+          pl={4}
+          borderLeft={1}
+          borderStyle={"solid"}
+          borderColor={Chakra.useColorModeValue("gray.200", "gray.700")}
+          align={"start"}
+        >
           {children &&
             children.map((child) => (
-              <Link key={child.label} py={2} to={child.href} onClick={onMainToggle}>
+              <Link
+                key={child.label}
+                py={2}
+                to={child.href}
+                onClick={onMainToggle}
+              >
                 {child.label}
               </Link>
             ))}
-        </Stack>
-      </Collapse>
-    </Stack>
+        </Chakra.Stack>
+      </Chakra.Collapse>
+    </Chakra.Stack>
   );
 };
 

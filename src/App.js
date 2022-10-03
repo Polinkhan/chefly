@@ -1,33 +1,33 @@
 import "./App.css";
-import { Navbar, NotFound, Login, Register, HeroSection, HomeSection, PrivateRoute, PreventRoute, PageLaoding, MyAccount, Router, Routes, Route, useFirebaseContext, AddFriend, ManageFriend } from "./AllComponents";
-
+import { Pages, Contexts } from "./AllComponents";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 function App() {
-  const { currentUser, fullDB } = useFirebaseContext();
+  const { currentUser, fullDB } = Contexts.useFirebaseContext();
   return (currentUser && fullDB) || currentUser === false ? (
     <Router>
-      {currentUser && <Navbar />}
+      {currentUser && <Pages.Navbar />}
       <Routes>
         {/* Routes When User is Not Authenticated */}
-        <Route element={<PreventRoute />}>
-          <Route exact path="/" element={<HeroSection />} />
-          <Route exact path="/login" element={<Login />} />
-          <Route exact path="/register" element={<Register />} />
+        <Route element={<Pages.PreventRoute />}>
+          <Route exact path="/" element={<Pages.HeroSection />} />
+          <Route exact path="/login" element={<Pages.Login />} />
+          <Route exact path="/register" element={<Pages.Register />} />
         </Route>
 
         {/* Routes When User is Authenticated */}
-        <Route element={<PrivateRoute />}>
-          <Route exact path="/home" element={<HomeSection />} />
-          <Route exact path="/account" element={<MyAccount />} />
-          <Route exact path="/addfriend" element={<AddFriend />} />
-          <Route exact path="/managefriend" element={<ManageFriend />} />
+        <Route element={<Pages.PrivateRoute />}>
+          <Route exact path="/home" element={<Pages.HomeSection />} />
+          <Route exact path="/account" element={<Pages.MyAccount />} />
+          <Route exact path="/addfriend" element={<Pages.AddFriend />} />
+          <Route exact path="/managefriend" element={<Pages.ManageFriend />} />
         </Route>
 
         {/* Routes When route Not Found */}
-        <Route path="*" element={<NotFound />} />
+        <Route path="*" element={<Pages.NotFound />} />
       </Routes>
     </Router>
   ) : (
-    <PageLaoding />
+    <Pages.PageLaoding />
   );
 }
 

@@ -1,7 +1,20 @@
 import { auth, db } from "../util/init-firebase";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, updateProfile, updateEmail } from "@firebase/auth";
-import { collection, setDoc, onSnapshot, doc, getDoc } from "firebase/firestore";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from "@firebase/auth";
+import {
+  collection,
+  setDoc,
+  onSnapshot,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 
 const FirebaseContext = createContext({
   currentUser: null,
@@ -70,9 +83,24 @@ const FirebaseContextProvider = (props) => {
     });
   }, []); //eslint-disable-line
 
-  const value = { currentUser, setCurrenUser, fullDB, register, login, logout, signInWithGoogle, updateDatabase, searchUserById, friendRequest };
+  const value = {
+    currentUser,
+    setCurrenUser,
+    fullDB,
+    register,
+    login,
+    logout,
+    signInWithGoogle,
+    updateDatabase,
+    searchUserById,
+    friendRequest,
+  };
 
-  return <FirebaseContext.Provider value={value}>{props.children}</FirebaseContext.Provider>;
+  return (
+    <FirebaseContext.Provider value={value}>
+      {props.children}
+    </FirebaseContext.Provider>
+  );
 };
 
 export default FirebaseContextProvider;

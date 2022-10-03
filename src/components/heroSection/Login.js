@@ -1,8 +1,6 @@
-import { Button, Checkbox, Flex, FormControl, FormLabel, Heading, Input, Stack, Image, Center, Text, InputGroup, InputRightElement, useToast, useColorModeValue } from "@chakra-ui/react";
+import { Chakra, icons, Contexts } from "../../AllComponents";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { IoEyeOff, IoEye } from "react-icons/io5";
-import { useFirebaseContext } from "../../contexts/FirebaseContext";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -10,9 +8,10 @@ export default function Login() {
   const [pass, setPass] = useState("");
   const [isChecked, setChecked] = useState(true);
   const [shouldBtnLoad, setBtnLoad] = useState(false);
-  const toast = useToast();
+  const toast = Chakra.useToast();
 
-  const { login, signInWithGoogle, updateDatabase } = useFirebaseContext();
+  const { login, signInWithGoogle, updateDatabase } =
+    Contexts.useFirebaseContext();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -36,46 +35,117 @@ export default function Login() {
   };
 
   return (
-    <Stack minH={"100vh"} direction={{ base: "column", md: "row" }}>
-      <Flex flex={1} align={"center"} justify={"center"} className={"logRegBg"}>
-        <Stack as={"form"} spacing={4} w={"full"} maxW={"md"} bg={"white"} p={"10"} boxShadow={"2xl"} rounded={"2xl"} onSubmit={handlesubmit}>
-          <Center pb={"5"}>
-            <Heading fontSize={"2xl"}>Sign in to your account</Heading>
-          </Center>
-          <FormControl id="email">
-            <FormLabel>Email address</FormLabel>
-            <Input autoFocus isRequired type="email" rounded={"full"} value={email} onChange={(e) => setEmail(e.target.value)} />
-          </FormControl>
-          <FormControl id="password">
-            <FormLabel>Password</FormLabel>
-            <InputGroup>
-              <Input isRequired autoComplete="off" rounded={"full"} type={showPassword ? "text" : "password"} value={pass} onChange={(e) => setPass(e.target.value)} />
-              <InputRightElement h={"full"}>
-                <Text cursor={"pointer"} fontSize={"xl"} color={"gray.600"} onClick={() => setShowPassword((showPassword) => !showPassword)}>
-                  {showPassword ? <IoEye /> : <IoEyeOff />}
-                </Text>
-              </InputRightElement>
-            </InputGroup>
-          </FormControl>
-          <Stack spacing={6}>
-            <Stack direction={{ base: "column", sm: "row" }} align={"start"} justify={"space-between"}>
-              <Checkbox colorScheme={"teal"} isChecked={isChecked} onChange={() => setChecked(!isChecked)}>
+    <Chakra.Stack minH={"100vh"} direction={{ base: "column", md: "row" }}>
+      <Chakra.Flex
+        flex={1}
+        align={"center"}
+        justify={"center"}
+        className={"logRegBg"}
+      >
+        <Chakra.Stack
+          as={"form"}
+          spacing={4}
+          w={"full"}
+          maxW={"md"}
+          bg={"white"}
+          p={"10"}
+          boxShadow={"2xl"}
+          rounded={"2xl"}
+          onSubmit={handlesubmit}
+        >
+          <Chakra.Center pb={"5"}>
+            <Chakra.Heading fontSize={"2xl"}>
+              Sign in to your account
+            </Chakra.Heading>
+          </Chakra.Center>
+          <Chakra.FormControl id="email">
+            <Chakra.FormLabel>Email address</Chakra.FormLabel>
+            <Chakra.Input
+              autoFocus
+              isRequired
+              type="email"
+              rounded={"full"}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </Chakra.FormControl>
+          <Chakra.FormControl id="password">
+            <Chakra.FormLabel>Password</Chakra.FormLabel>
+            <Chakra.InputGroup>
+              <Chakra.Input
+                isRequired
+                autoComplete="off"
+                rounded={"full"}
+                type={showPassword ? "text" : "password"}
+                value={pass}
+                onChange={(e) => setPass(e.target.value)}
+              />
+              <Chakra.InputRightElement h={"full"}>
+                <Chakra.Text
+                  cursor={"pointer"}
+                  fontSize={"xl"}
+                  color={"gray.600"}
+                  onClick={() =>
+                    setShowPassword((showPassword) => !showPassword)
+                  }
+                >
+                  {showPassword ? <icons.IoEye /> : <icons.IoEyeOff />}
+                </Chakra.Text>
+              </Chakra.InputRightElement>
+            </Chakra.InputGroup>
+          </Chakra.FormControl>
+          <Chakra.Stack spacing={6}>
+            <Chakra.Stack
+              direction={{ base: "column", sm: "row" }}
+              align={"start"}
+              justify={"space-between"}
+            >
+              <Chakra.Checkbox
+                colorScheme={"teal"}
+                isChecked={isChecked}
+                onChange={() => setChecked(!isChecked)}
+              >
                 Remember me
-              </Checkbox>
+              </Chakra.Checkbox>
               <Link>
-                <Text color={"teal.500"} _hover={{ textDecoration: "underline" }}>
+                <Chakra.Text
+                  color={"teal.500"}
+                  _hover={{ textDecoration: "underline" }}
+                >
                   Forgot password?
-                </Text>
+                </Chakra.Text>
               </Link>
-            </Stack>
-            <Button type={"submit"} size="lg" colorScheme={"teal"} rounded={"full"} isLoading={shouldBtnLoad}>
+            </Chakra.Stack>
+            <Chakra.Button
+              type={"submit"}
+              size="lg"
+              colorScheme={"teal"}
+              rounded={"full"}
+              isLoading={shouldBtnLoad}
+            >
               Sign In
-            </Button>
-          </Stack>
-          <Flex align={"center"} _before={{ content: '""', borderBottom: "1px solid", borderColor: useColorModeValue("gray.200", "gray.700"), flexGrow: 1, mr: 4 }} _after={{ content: '""', borderBottom: "1px solid", borderColor: useColorModeValue("gray.200", "gray.700"), flexGrow: 1, ml: 4 }}>
-            <Text as="h1">OR</Text>
-          </Flex>
-          <Button
+            </Chakra.Button>
+          </Chakra.Stack>
+          <Chakra.Flex
+            align={"center"}
+            _before={{
+              content: '""',
+              borderBottom: "1px solid",
+              borderColor: Chakra.useColorModeValue("gray.200", "gray.700"),
+              flexGrow: 1,
+              mr: 4,
+            }}
+            _after={{
+              content: '""',
+              borderBottom: "1px solid",
+              borderColor: Chakra.useColorModeValue("gray.200", "gray.700"),
+              flexGrow: 1,
+              ml: 4,
+            }}
+          >
+            <Chakra.Text as="h1">OR</Chakra.Text>
+          </Chakra.Flex>
+          <Chakra.Button
             size="lg"
             colorScheme={"red"}
             rounded={"full"}
@@ -83,26 +153,46 @@ export default function Login() {
             onClick={() => {
               signInWithGoogle().then((response) => {
                 const user = response.user;
-                updateDatabase({ displayName: user.displayName, photoURL: user.photoURL, email: user.email, sendRequestList: {}, receiveRequestList: {}, friendList: {} }, user.uid);
+                updateDatabase(
+                  {
+                    displayName: user.displayName,
+                    photoURL: user.photoURL,
+                    email: user.email,
+                    sendRequestList: {},
+                    receiveRequestList: {},
+                    friendList: {},
+                  },
+                  user.uid
+                );
               });
             }}
           >
             Sign In with Google
-          </Button>
-          <Center>
+          </Chakra.Button>
+          <Chakra.Center>
             Not a member?
             <Link to={"/register"} replace>
-              <Text px={"2"} color={"teal.400"} _hover={{ textDecoration: "underline" }}>
+              <Chakra.Text
+                px={"2"}
+                color={"teal.400"}
+                _hover={{ textDecoration: "underline" }}
+              >
                 Sign Up
-              </Text>
+              </Chakra.Text>
             </Link>
-          </Center>
-        </Stack>
-      </Flex>
+          </Chakra.Center>
+        </Chakra.Stack>
+      </Chakra.Flex>
 
-      <Flex flex={1}>
-        <Image alt={"Login Image"} objectFit={"cover"} src={"https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1352&q=80"} />
-      </Flex>
-    </Stack>
+      <Chakra.Flex flex={1}>
+        <Chakra.Image
+          alt={"Login Image"}
+          objectFit={"cover"}
+          src={
+            "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1352&q=80"
+          }
+        />
+      </Chakra.Flex>
+    </Chakra.Stack>
   );
 }

@@ -1,242 +1,131 @@
-import { Avatar, Button, IconButton, FormControl, FormLabel, useDisclosure, Input, InputGroup, InputRightElement, Box, Center, Container, Stack, Text, VStack, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, useToast, Image, HStack, Tooltip } from "@chakra-ui/react";
+import { Chakra, Contexts, icons } from "../../AllComponents";
 import { useState } from "react";
-import { FaRegEdit, FaCheck } from "react-icons/fa";
-import { IoCloudUploadOutline, IoCopyOutline } from "react-icons/io5";
-import { useFirebaseContext } from "../../contexts/FirebaseContext";
-import { useDropzone } from "react-dropzone";
-import { useEffect } from "react";
-import { useCallback } from "react";
-import Resizer from "react-image-file-resizer";
+import DropZone from "./DropZone";
+import EditAble from "./EditAble";
 
 const MyAccount = () => {
-  const { isOpen, onClose, onOpen } = useDisclosure();
-  const { currentUser, fullDB } = useFirebaseContext();
+  const { isOpen, onClose, onOpen } = Chakra.useDisclosure();
+  const { currentUser, fullDB } = Contexts.useFirebaseContext();
+  const [tooltip, setTooltip] = useState("Click to Copy");
   const myDB = fullDB[currentUser.uid];
-
   const ProfileItems = ["displayName", "email", "phoneNumber"];
 
-  const [tooltip, setTooltip] = useState("Click to Copy");
-
   return (
-    <Center h={"calc(100vh - 60px)"}>
-      <Container maxW={"6xl"}>
-        <Center h={"80vh"} w={"100%"} boxShadow={"lg"}>
-          <VStack h={"70%"} w={{ lg: "80%", base: "95%" }}>
-            <HStack h={"20%"} w={"100%"}>
-              <HStack w={"150px"} justifyContent={"end"} fontWeight={"bold"}>
-                <Text>Profile Picture</Text>
-              </HStack>
-              <Avatar p={"1"} size={"xl"} src={myDB.photoURL} bg={"white"} cursor={"pointer"} border={"4px solid gray"}>
-                <IconButton h={"100%"} w={"100%"} rounded={"50%"} variant={""} fontSize={"2xl"} color={"white"} icon={<FaRegEdit />} position={"absolute"} transition={"0.2s"} opacity={"0"} onClick={onOpen} _hover={{ opacity: ".5", backgroundColor: "black" }}></IconButton>
-              </Avatar>
-            </HStack>
-            <VStack h={"70%"} w={{ lg: "80%", base: "95%" }}>
-              {ProfileItems.map((item, index) => (
-                <HStack h={"15%"} w={"100%"} key={index}>
-                  <HStack w={"150px"} justifyContent={"end"} fontWeight={"bold"}>
-                    <Text>{item}</Text>
-                  </HStack>
-                  <EditAble value={item} />
-                </HStack>
-              ))}
-              <HStack h={"15%"} w={"100%"}>
-                <HStack w={"150px"} justifyContent={"end"} fontWeight={"bold"}>
-                  <Text>ID</Text>
-                </HStack>
-                <InputGroup pl={8}>
-                  <InputRightElement>
-                    <Tooltip hasArrow label={tooltip}>
-                      <IconButton
-                        icon={<IoCopyOutline />}
-                        variant={"ghost"}
-                        onClick={() => {
-                          setTooltip("Copied !!");
-                          setTimeout(() => {
-                            setTooltip("Click to Copy");
-                          }, 2000);
-                          navigator.clipboard.writeText(currentUser.uid);
-                        }}
-                      />
-                    </Tooltip>
-                  </InputRightElement>
-                  <Input isDisabled value={currentUser.uid} />
-                </InputGroup>
-              </HStack>
-            </VStack>
-          </VStack>
-        </Center>
+    <Chakra.Center h={"calc(100vh - 65px)"} bg={"gray.100"}>
+      <Chakra.Container maxW={"6xl"}>
+        <Chakra.VStack
+          bg={"white"}
+          h={"80vh"}
+          w={{ lg: "80%", base: "100%" }}
+          boxShadow={"lg"}
+          mx={"auto"}
+          fontWeight={"bold"}
+          py={10}
+          px={{ base: 5, md: 20 }}
+          rounded={"xl"}
+        >
+          <Chakra.HStack h={"20%"} gap={10} w={"100%"}>
+            <Chakra.Center w={"150px"}>Profile Picture</Chakra.Center>
+
+            <Chakra.Avatar
+              size={"2xl"}
+              src={myDB.photoURL}
+              cursor={"pointer"}
+              boxShadow={"dark-lg"}
+            >
+              <Chakra.IconButton
+                h={"100%"}
+                w={"100%"}
+                rounded={"50%"}
+                fontSize={"sm"}
+                color={"white"}
+                icon={<icons.FaRegEdit />}
+                position={"absolute"}
+                transition={"0.2s"}
+                opacity={"0"}
+                onClick={onOpen}
+                _hover={{
+                  opacity: ".5",
+                  backgroundColor: "black",
+                  fontSize: "4xl",
+                }}
+              ></Chakra.IconButton>
+            </Chakra.Avatar>
+          </Chakra.HStack>
+          <Chakra.VStack h={"90%"} w={"100%"}>
+            {ProfileItems.map((item, index) => (
+              <Chakra.Center
+                pt={8}
+                gap={4}
+                w={"100%"}
+                key={index}
+                flexDirection={{ md: "row", base: "column" }}
+              >
+                <Chakra.HStack
+                  w={"150px"}
+                  justifyContent={{ base: "center", md: "end" }}
+                  textTransform={"capitalize"}
+                >
+                  <Chakra.Text>{item}</Chakra.Text>
+                </Chakra.HStack>
+                <EditAble value={item} />
+              </Chakra.Center>
+            ))}
+            <Chakra.Center
+              pt={8}
+              gap={4}
+              w={"100%"}
+              flexDirection={{ md: "row", base: "column" }}
+            >
+              <Chakra.HStack
+                w={"150px"}
+                justifyContent={{ base: "center", md: "end" }}
+                fontWeight={"bold"}
+                textTransform={"capitalize"}
+              >
+                <Chakra.Text>ID</Chakra.Text>
+              </Chakra.HStack>
+              <Chakra.InputGroup>
+                <Chakra.InputRightElement>
+                  <Chakra.Tooltip hasArrow label={tooltip}>
+                    <Chakra.IconButton
+                      icon={<icons.IoCopyOutline />}
+                      variant={"ghost"}
+                      onClick={() => {
+                        setTooltip("Copied !!");
+                        setTimeout(() => setTooltip("Click to Copy"), 2000);
+                        navigator.clipboard.writeText(currentUser.uid);
+                      }}
+                    />
+                  </Chakra.Tooltip>
+                </Chakra.InputRightElement>
+                <Chakra.Input isDisabled value={currentUser.uid} bg={"white"} />
+              </Chakra.InputGroup>
+            </Chakra.Center>
+          </Chakra.VStack>
+        </Chakra.VStack>
         <OpenModal isOpen={isOpen} onClose={onClose} />
-      </Container>
-    </Center>
+      </Chakra.Container>
+    </Chakra.Center>
   );
 };
 
-const EditAble = ({ value }) => {
-  const onEdit = { isReadOnly: false };
-  const offEdit = { isReadOnly: true };
 
-  const { currentUser, fullDB, updateDatabase } = useFirebaseContext();
-  const [input, setInput] = useState(fullDB[currentUser.uid][value] || "");
-  const [edit, setEdit] = useState(offEdit);
-  const [isEditing, setEditing] = useState(false);
-  const [shouldLoad, setLoad] = useState(false);
-  const [tooltip, setTooltip] = useState("edit");
-  const toast = useToast();
-
-  return (
-    <InputGroup pl={8}>
-      <InputRightElement>
-        <Tooltip hasArrow label={tooltip}>
-          <IconButton
-            display={isEditing ? "none" : "flex"}
-            icon={<FaRegEdit />}
-            // isLoading
-            variant={"ghost"}
-            onClick={() => {
-              setEdit(onEdit);
-              setEditing(true);
-              setTooltip("Save");
-            }}
-          />
-        </Tooltip>
-        <Tooltip hasArrow label={tooltip}>
-          <IconButton
-            display={isEditing ? "flex" : "none"}
-            icon={<FaCheck />}
-            isLoading={shouldLoad}
-            variant={"ghost"}
-            onClick={() => {
-              console.log(fullDB[currentUser.uid]);
-              setLoad(true);
-              updateDatabase({ [value]: input }, currentUser.uid)
-                .then(() => {
-                  setLoad(false);
-                })
-                .catch((error) => {
-                  setInput(currentUser[value]);
-                  console.log(error.message);
-                  toast({
-                    description: error.message,
-                    status: "error",
-                    duration: 2000,
-                    isClosable: true,
-                  });
-                })
-                .finally(() => {
-                  setEdit(offEdit);
-                  setEditing(false);
-                  setTooltip("edit");
-                });
-            }}
-          />
-        </Tooltip>
-      </InputRightElement>
-      <Input value={input} onChange={(e) => setInput(e.target.value)} bg={"transparent"} color={"black"} {...edit} />
-    </InputGroup>
-  );
-};
 
 function OpenModal({ isOpen, onClose }) {
   return (
-    <Modal onClose={onClose} isOpen={isOpen} isCentered>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Update Image</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
+    <Chakra.Modal onClose={onClose} isOpen={isOpen} isCentered>
+      <Chakra.ModalOverlay />
+      <Chakra.ModalContent>
+        <Chakra.ModalHeader>Update Image</Chakra.ModalHeader>
+        <Chakra.ModalCloseButton />
+        <Chakra.ModalBody>
           <DropZone onClose={onClose} />
-        </ModalBody>
-        <ModalFooter></ModalFooter>
-      </ModalContent>
-    </Modal>
+        </Chakra.ModalBody>
+        <Chakra.ModalFooter></Chakra.ModalFooter>
+      </Chakra.ModalContent>
+    </Chakra.Modal>
   );
 }
-
-const DropZone = ({ onClose }) => {
-  const [dropZoneColor, setDropZoneColor] = useState("gray.100");
-  const [img, setImg] = useState(null);
-  const { updateDatabase, currentUser } = useFirebaseContext();
-  const [shouldBtnLoad, setBtnLoad] = useState(false);
-  const toast = useToast();
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setBtnLoad(true);
-    updateDatabase({ photoURL: img }, currentUser.uid)
-      .then(() => {
-        onClose();
-      })
-      .catch((error) =>
-        toast({
-          description: error.message,
-          status: "error",
-          duration: 2000,
-          isClosable: true,
-        })
-      )
-      .finally(() => {
-        setBtnLoad(false);
-      });
-  };
-
-  const resizeFile = (file) =>
-    new Promise((resolve) => {
-      Resizer.imageFileResizer(file, 200, 200, "JPEG", 100, 0, (uri) => resolve(uri), "base64");
-    });
-
-  const setFile = async (file) => {
-    try {
-      const image = await resizeFile(file);
-      setImg(image);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const onDrop = useCallback((acceptedFile, rejectedFiles) => {
-    setFile(acceptedFile[0]);
-  }, []); //eslint-disable-line
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      "image/jpeg": [],
-      "image/png": [],
-    },
-  });
-
-  useEffect(() => {
-    isDragActive ? setDropZoneColor("gray.200") : setDropZoneColor("gray.100");
-  }, [isDragActive]);
-
-  return (
-    <Stack as={"form"} onSubmit={handleSubmit} spacing={"8"}>
-      <FormControl id="img">
-        <FormLabel px={4}>Uplaod Image</FormLabel>
-        {img ? (
-          <Center>
-            <Image src={img} />
-          </Center>
-        ) : (
-          <VStack h={"200px"} {...getRootProps()} border={"1px dotted"} bg={dropZoneColor} justifyContent={"center"} cursor={"pointer"}>
-            <Input {...getInputProps()} />
-            <Text>Drop or Click to upload file here </Text>
-            <Text>[ img or png file only ]</Text>
-            <Text fontSize={"4xl"} color={"gray"}>
-              <IoCloudUploadOutline />
-            </Text>
-          </VStack>
-        )}
-      </FormControl>
-      <Center>
-        {img && (
-          <Button rounded={"full"} isLoading={shouldBtnLoad} colorScheme={"teal"} type={"submit"}>
-            Submit
-          </Button>
-        )}
-      </Center>
-    </Stack>
-  );
-};
 
 export default MyAccount;
