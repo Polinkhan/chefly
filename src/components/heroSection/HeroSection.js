@@ -1,4 +1,4 @@
-import { Chakra } from "../../AllComponents";
+import { Chakra, icons } from "../../AllComponents";
 import { Link } from "react-router-dom";
 import FooterSection from "../footerSection/FooterSection";
 
@@ -36,7 +36,7 @@ export default function HeroSection() {
               >
                 CHEFLY
               </Chakra.Text>
-              <Chakra.br />
+              <br />
               <Chakra.Text as={"span"} color={"teal.400"}>
                 use everywhere!
               </Chakra.Text>
@@ -44,11 +44,8 @@ export default function HeroSection() {
             <Chakra.Text color={"gray.500"}>
               A Free Social App free to use !!
             </Chakra.Text>
-            <Chakra.Stack
-              spacing={{ base: 4, sm: 6 }}
-              direction={{ base: "column", sm: "row" }}
-            >
-              <Chakra.Link to={"/register"}>
+            <Chakra.Stack spacing={4} direction={"row"} pt={8}>
+              <Link to={"/register"}>
                 <Chakra.Button
                   rounded={"full"}
                   size={"lg"}
@@ -60,8 +57,8 @@ export default function HeroSection() {
                 >
                   Sign Up
                 </Chakra.Button>
-              </Chakra.Link>
-              <Chakra.Link to={"/login"}>
+              </Link>
+              <Link to={"/login"}>
                 <Chakra.Button
                   rounded={"full"}
                   size={"lg"}
@@ -70,7 +67,7 @@ export default function HeroSection() {
                 >
                   Sign In
                 </Chakra.Button>
-              </Chakra.Link>
+              </Link>
             </Chakra.Stack>
           </Chakra.Stack>
           <Chakra.Flex
@@ -93,7 +90,7 @@ export default function HeroSection() {
                 aria-label={"Play Button"}
                 variant={"ghost"}
                 _hover={{ bg: "transparent" }}
-                icon={<Chakra.PlayIcon w={12} h={12} />}
+                // icon={<PlayIcon w={12} h={12} />}
                 size={"lg"}
                 color={"white"}
                 position={"absolute"}
@@ -115,7 +112,7 @@ export default function HeroSection() {
           </Chakra.Flex>
         </Chakra.Stack>
       </Chakra.Container>
-      <Chakra.FooterSection />
+      <FooterSection />
     </Chakra.Box>
   );
 }
